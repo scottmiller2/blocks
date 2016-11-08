@@ -2,21 +2,78 @@
 //  ViewController.swift
 //  blocks1
 //
-//  Created by Scott Miller on 10/19/16.
+//  Created on 10/19/16.
 //  Copyright © 2016 Scott Miller. All rights reserved.
 //
 
 import UIKit
 
-class ViewController: UIViewController {
+//This extension allows a number to be generated between a supplied minimum and maxiumum—in this case 0.1 and 1.0.
+extension Double {
     
+    public static var random: Double {
+        get {
+            return Double(arc4random()) / 0xFFFFFFFF
+        }
+    }
+    
+    public static func random(min: Double, max: Double) -> Double {
+        return Double.random * (max - min) + min
+    }
+}
+
+class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    //***********************************//
+    /*Added Code*/
+    
+    
+    let reuseIdentifier = "cell"
+    var items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"]
+    
+    // MARK: - UICollectionViewDataSource protocol
+    
+    // tell the collection view how many cells to make
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.items.count
+    }
+    
+    // make a cell for each cell index path
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        // get a reference to our storyboard cell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath as IndexPath) as! MyCollectionViewCell
+        // Use the outlet in our custom class to get a reference to the UILabel in the cell
+        for _ in 0..<25 {
+        let rnd1 = Double.random(min: 0.1, max: 1.0)
+        let rnd2 = Double.random(min: 0.1, max: 1.0)
+        let rnd3 = Double.random(min: 0.1, max: 1.0)
+        cell.myLabel.text = self.items[indexPath.item]
+        cell.backgroundColor = UIColor(red: CGFloat(rnd1), green: CGFloat(rnd2), blue: CGFloat(rnd3), alpha: CGFloat(1.0))
+        }
+        return cell
+    }
+    
+    // MARK: - UICollectionViewDelegate protocol
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // handle tap events
+        count += 1
+        counterLabel.text = "\(count)"
+        print("You selected cell #\(indexPath.item)!")
+    }
+
+    //***********************************//
+    /*My Code*/
     
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var timerLabel: UILabel!
+    @IBOutlet weak var counterLabel: UILabel!
 
     var seconds = 60 //Default timer sets to 60
     var timer = Timer()
-    var blockColor = 0.0 //new 20th
+    var blockColor = 0.0
+    var count = 0
     
     @IBAction func playButtonPressed(_ sender: AnyObject) {
         setupGame()
@@ -24,76 +81,18 @@ class ViewController: UIViewController {
     }
     
     func setupGame()  {
-        
-        var coloredSquare = UIView()
-        var seconds = 60
-        
-        //new 20th
-        func randColor(){
-
-            var color = 1.0
-            color = Double(Int(arc4random_uniform((100) * 10) / 100))
-            if (color == 0){
-                randColor()
-            }
-            blockColor = color
-            print("")
-            print("Testing blockColor value: ", blockColor) //debugging to test random number
-        }
-        //working to here
-        
-        func colorAssigner(){
-            var rand1: Double = 1.0
-            var rand2: Double = 1.0
-            var rand3: Double = 1.0
-            var rand4: Double = 1.0
-            
-            
-            for _ in 0..<1 {
-                randColor()
-                rand1 = blockColor
-                randColor()
-                rand2 = blockColor
-                randColor()
-                rand3 = blockColor
-                randColor()
-                rand4 = blockColor
-                coloredSquare.backgroundColor = UIColor(red: CGFloat(rand1), green: CGFloat(rand2), blue: CGFloat(rand3), alpha: CGFloat(rand4))
-                coloredSquare.frame = CGRect(x: 5, y: 120, width: 100, height: 100)
-                self.view.addSubview(coloredSquare)
-                print("")
-                print("Testing rand1 value: ", rand1) //debugging to test random number
-                print("Testing rand2 value: ", rand2)
-                print("Testing rand3 value: ", rand3)
-                print("Testing rand4 value: ", rand4)
-            }
-        }
-        //end random block color
-        //begin drawing
-        
-        colorAssigner()
-        
-        
+    
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(ViewController.subtractTime), userInfo: nil, repeats: true)
     
-        
-        /////Call to random color generator
-        
-        // set frame (position and size) of the square
-        // iOS coordinate system starts at the top left of the screen
-        // so this square will be at top left of screen, 50x50pt
-        // CG in CGRect stands for Core Graphics
-        //coloredSquare.frame = CGRect(x: 5, y: 120, width: 100, height: 100)
-        
-        // finally, add the square to the screen
-        //self.view.addSubview(coloredSquare)
         playButton.isHidden = true
+        counterLabel.isHidden = false
         
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         timerLabel.isHidden = true
+        counterLabel.isHidden = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -119,4 +118,3 @@ class ViewController: UIViewController {
 
 
 }
-

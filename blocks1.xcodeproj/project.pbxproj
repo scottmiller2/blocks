@@ -14,6 +14,7 @@
 		5F1130D41DB81CD20012B007 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F1130D21DB81CD20012B007 /* LaunchScreen.storyboard */; };
 		5F1130DF1DB81CD20012B007 /* blocks1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1130DE1DB81CD20012B007 /* blocks1Tests.swift */; };
 		5F1130EA1DB81CD30012B007 /* blocks1UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1130E91DB81CD30012B007 /* blocks1UITests.swift */; };
+		5F14365F1DD138F100B14401 /* MyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F14365E1DD138F100B14401 /* MyCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		5F1130E51DB81CD30012B007 /* blocks1UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blocks1UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F1130E91DB81CD30012B007 /* blocks1UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = blocks1UITests.swift; sourceTree = "<group>"; };
 		5F1130EB1DB81CD30012B007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F14365E1DD138F100B14401 /* MyCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			children = (
 				5F1130C91DB81CD20012B007 /* AppDelegate.swift */,
 				5F1130CB1DB81CD20012B007 /* ViewController.swift */,
+				5F14365E1DD138F100B14401 /* MyCollectionViewCell.swift */,
 				5F1130CD1DB81CD20012B007 /* Main.storyboard */,
 				5F1130D01DB81CD20012B007 /* Assets.xcassets */,
 				5F1130D21DB81CD20012B007 /* LaunchScreen.storyboard */,
@@ -261,6 +264,7 @@
 			files = (
 				5F1130CC1DB81CD20012B007 /* ViewController.swift in Sources */,
 				5F1130CA1DB81CD20012B007 /* AppDelegate.swift in Sources */,
+				5F14365F1DD138F100B14401 /* MyCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -503,6 +507,7 @@
 				5F1130F01DB81CD30012B007 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5F1130F11DB81CD30012B007 /* Build configuration list for PBXNativeTarget "blocks1Tests" */ = {
 			isa = XCConfigurationList;
@@ -511,6 +516,7 @@
 				5F1130F31DB81CD30012B007 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5F1130F41DB81CD30012B007 /* Build configuration list for PBXNativeTarget "blocks1UITests" */ = {
 			isa = XCConfigurationList;
@@ -519,6 +525,7 @@
 				5F1130F61DB81CD30012B007 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
