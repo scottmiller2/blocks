@@ -44,7 +44,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         // get a reference to our storyboard cell
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath as IndexPath) as! MyCollectionViewCell
         // Use the outlet in our custom class to get a reference to the UILabel in the cell
-        for _ in 0..<25 {
+        for _ in 0..<18 {
         let rnd1 = Double.random(min: 0.1, max: 1.0)
         let rnd2 = Double.random(min: 0.1, max: 1.0)
         let rnd3 = Double.random(min: 0.1, max: 1.0)
