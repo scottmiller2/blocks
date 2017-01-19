@@ -42,21 +42,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     // make a cell for each cell index path
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        // get a reference to our storyboard cell
+        // get a reference to the storyboard cell
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath as IndexPath) as! MyCollectionViewCell
-        // Use the outlet in our custom class to get a reference to the UILabel in the cell
-        
-        
-        /*for _ in 0..<18 {
-        let rnd1 = Double.random(min: 0.1, max: 1.0)
-        let rnd2 = Double.random(min: 0.1, max: 1.0)
-        let rnd3 = Double.random(min: 0.1, max: 1.0)
-        cell.myLabel.text = self.items[indexPath.item]
-        cell.backgroundColor = UIColor(red: CGFloat(rnd1), green: CGFloat(rnd2), blue: CGFloat(rnd3), alpha: CGFloat(1.0))
-        cell.myLabel.text = self.items[indexPath.item]
-        }*/
-        
-        
+        // Use the outlet in the custom class to get a reference to the UILabel in the cell
         
         let rnd1 = Double.random(min: 0.1, max: 1.0)
         colorsRed[arrayCounter] = rnd1
@@ -66,7 +54,12 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         colorsBlue[arrayCounter] = rnd3
         
         cell.backgroundColor = UIColor(red: CGFloat(rnd1), green: CGFloat(rnd2), blue: CGFloat(rnd3), alpha: CGFloat(1.0))
+
         cell.myLabel.text = self.items[indexPath.item]
+
+        if indexPath.item == 7 || indexPath.item == 10 {
+            cell.backgroundColor = UIColor(red: CGFloat(1), green: CGFloat(1), blue: CGFloat(1), alpha: CGFloat(1.0))
+        }
         
         arrayCounter += 1
         return cell
@@ -114,13 +107,22 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         //counterLabel.isHidden = false
         
         //Print colors added in
+        var redCount = 1
+        var greenCount = 1
+        var blueCount = 1
         for item in colorsRed {
+            print("Red \(redCount)")
+            redCount += 1
             print(item)
         }
         for item in colorsGreen {
+            print("Green \(greenCount)")
+            greenCount += 1
             print(item)
         }
         for item in colorsBlue {
+            print("Blue \(blueCount)")
+            blueCount += 1
             print(item)
         }
         
