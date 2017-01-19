@@ -25,19 +25,44 @@ extension Double {
 class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     //Color Arrays
-    var colorsRed: [Double] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    var colorsGreen: [Double] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    var colorsBlue: [Double] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    var colorsRed: [Double] = [0.3, 0.7, 0.1, 0.2, 0.9, 0.5, 0.6, 0.2, 1.0, 0.6, 0.1, 0.2, 1.0, 0.4, 0.5, 0.3, 0.4, 0.3]
+    var colorsGreen: [Double] = [0.6, 0.4, 0.1, 0.2, 0.7, 0.5, 1.0, 0.2, 0.8, 0.6, 0.6, 0.4, 0.4, 0.5, 0.4, 0.3, 0.4, 0.3]
+    var colorsBlue: [Double] = [0.1, 0.7, 0.5, 0.6, 0.6, 0.5, 0.1, 0.9, 0.5, 0.9, 0.4, 0.7, 0.5, 0.2, 0.3, 0.5, 0.3, 1.0]
     var scoreCounter = 0
     var arrayCounter = 0
     
     let reuseIdentifier = "cell"
     var items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"]
     
+    //circle creator
+    
+    
     // tell the collection view how many cells to make
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.items.count
     }
+    
+    // build a circle
+    func makeCircle()->()
+    {
+    
+        let circlePath = UIBezierPath(arcCenter: CGPoint(x: 100,y: 100), radius: CGFloat(50), startAngle: CGFloat(0), endAngle:CGFloat(M_PI * 2), clockwise: true)
+        
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = circlePath.cgPath
+        
+        let diceRoll = Int(arc4random_uniform(UInt32(18)))
+        print("Your random number is #\(diceRoll + 1)!")
+        
+        let randColor = UIColor(red: CGFloat(colorsRed[diceRoll]), green: CGFloat(colorsGreen[diceRoll]), blue: CGFloat(colorsBlue[diceRoll]), alpha: CGFloat(1.0))
+        
+        //change the fill color
+        shapeLayer.fillColor = randColor.cgColor
+        print("Your random color is #\(randColor)!")
+        
+        view.layer.addSublayer(shapeLayer)
+    }
+
     
     // make a cell for each cell index path
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -46,21 +71,24 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath as IndexPath) as! MyCollectionViewCell
         // Use the outlet in the custom class to get a reference to the UILabel in the cell
         
+        /*
         let rnd1 = Double.random(min: 0.1, max: 1.0)
         colorsRed[arrayCounter] = rnd1
         let rnd2 = Double.random(min: 0.1, max: 1.0)
         colorsGreen[arrayCounter] = rnd2
         let rnd3 = Double.random(min: 0.1, max: 1.0)
         colorsBlue[arrayCounter] = rnd3
+        */
+
+        cell.backgroundColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: CGFloat(1.0))
         
-        cell.backgroundColor = UIColor(red: CGFloat(rnd1), green: CGFloat(rnd2), blue: CGFloat(rnd3), alpha: CGFloat(1.0))
-
+        makeCircle()
+        
         cell.myLabel.text = self.items[indexPath.item]
-
         if indexPath.item == 7 || indexPath.item == 10 {
             cell.backgroundColor = UIColor(red: CGFloat(1), green: CGFloat(1), blue: CGFloat(1), alpha: CGFloat(1.0))
         }
-        
+
         arrayCounter += 1
         return cell
     }
@@ -73,9 +101,6 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         counterLabel.text = "\(scoreCounter)"
         print("You selected cell #\(indexPath.item + 1)!")
     }
-
-    //***********************************//
-    /*My Code*/
     
     @IBOutlet weak var menuView: UIView!
     @IBOutlet weak var playButton: UIButton!
@@ -85,7 +110,7 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     @IBOutlet weak var blocksMenu: UILabel!
     @IBOutlet weak var blocksTopBar: UILabel!
 
-    var seconds = 60 //Default timer sets to 60
+    var seconds = 60
     var timer = Timer()
     var blockColor = 0.0
     
