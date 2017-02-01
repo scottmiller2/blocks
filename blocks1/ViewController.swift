@@ -8,25 +8,18 @@
 
 import UIKit
 
-class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class ViewController: UIViewController, UICollectionViewDelegate {
     
     //Color Arrays
-    var colorsRed: [Double] = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1.0, /*8*/ 0.8, 0.9, 1.0, 0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77]
-    var colorsGreen: [Double] = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1.0, /*8*/ 0.8, 0.9, 1.0, 0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77]
-    var colorsBlue: [Double] = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1.0, /*8*/ 0.8, 0.9, 1.0, 0.11, 0.22, 0.33, 0.44, 0.555, 0.66, 0.77]
+    var colorsRed: [Double] = [0.6, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0, /*8*/ 0.6, 0.2, 1.0, 0.6, 0.7, 0.8, 0.9, 1.0, 0.0, 0.9]
+    var colorsGreen: [Double] = [0.9, 0.8, 0.3, 0.6, 0.5, 0.4, 0.3, 1.0, /*8*/ 0.2, 0.6, 1.0, 1.0, 0.4, 0.3, 0.2, 0.1, 0.5, 0.8]
+    var colorsBlue: [Double] = [0.4, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 1.0, /*8*/ 0.8, 0.9, 1.0, 0.1, 0.2, 0.3, 0.4, 0.2, 0.3, 0.2]
     var scoreCounter = 0
     var arrayCounter = 0
     
     let reuseIdentifier = "cell"
     var items = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"]
     
-    //circle creator
-    
-    
-    // tell the collection view how many cells to make
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.items.count
-    }
     
     // build a circle
     var circleCount = 0
@@ -51,38 +44,6 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         
         circleCount += 1
         view.layer.addSublayer(shapeLayer)
-    }
-
-    
-    // make a cell for each cell index path
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        // get a reference to the storyboard cell
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath as IndexPath) as! MyCollectionViewCell
-
-
-        cell.backgroundColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: CGFloat(1.0))
-        
-        
-        cell.myLabel.text = self.items[indexPath.item]
-        if indexPath.item == 7 || indexPath.item == 10 {
-            cell.backgroundColor = UIColor(red: CGFloat(1), green: CGFloat(1), blue: CGFloat(1), alpha: CGFloat(1.0))
-            cell.myLabel.text = "";
-        }
-        makeCircle()
-        arrayCounter += 1
-        return cell
-    }
-    
-    // MARK: - UICollectionViewDelegate protocol
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // handle tap events
-        scoreCounter += 1
-        counterLabel.text = "\(scoreCounter)"
-        print("You selected cell #\(indexPath.item)")
-        let selectedCellColor = UIColor(red: CGFloat(colorsRed[indexPath.item]), green: CGFloat(colorsGreen[indexPath.item]), blue: CGFloat(colorsBlue[indexPath.item]), alpha: CGFloat(1.0))
-        print("The color of this cell is #\(selectedCellColor)")
     }
     
     @IBOutlet weak var menuView: UIView!
@@ -119,7 +80,26 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         timerLabel.isHidden = true
         counterLabel.isHidden = true
         blocksTopBar.isHidden = true
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
         
+        let initX = 93
+        let initY = 10
+        let padding = 10
+        let imgWidth = 100
+        
+        for i in 0...2 {
+            for j in 1...6 {
+                let img = UIImageView(image:#imageLiteral(resourceName: "square"))
+                
+                img.center.x = CGFloat(initX + i * (imgWidth + padding))
+                img.center.y = CGFloat(initY + j * (imgWidth + padding))
+                
+                //var panRecognizer = UIPanGestureRecognizer(target:self.parent, action:"handlePan:")
+                //img.gestureRecognizers = [panRecognizer]
+                
+                view.addSubview(img)
+            }
+        }
     }
     
     override func didReceiveMemoryWarning() {
