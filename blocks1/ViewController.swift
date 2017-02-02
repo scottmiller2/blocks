@@ -92,7 +92,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                     
                 squareImg.isUserInteractionEnabled = true
                     
-                squareImg.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: Selector(("handlePan:"))))
+                squareImg.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePan(_:))))
                 
                 view.addSubview(squareImg)
                 }
