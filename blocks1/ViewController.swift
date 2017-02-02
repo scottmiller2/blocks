@@ -22,7 +22,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     let diceRoll = 0
 
     
-    @IBOutlet weak var menuView: UIView!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet weak var counterLabel: UILabel!
@@ -35,7 +34,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var blockColor = 0.0
     
     @IBAction func playButtonPressed(_ sender: AnyObject) {
-        menuView.isHidden = true
         helpButton.isHidden = true
         setupGame()
         timerLabel.isHidden = false
@@ -52,7 +50,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     }
     
     override func viewDidLoad() {
-        super.viewDidLoad()
+        
         timerLabel.isHidden = true
         counterLabel.isHidden = true
         blocksTopBar.isHidden = true
@@ -73,6 +71,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                     circleImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                     
                     view.addSubview(circleImg)
+                    circleImg.layer.zPosition = 1;
                 }
                 else {
                 //circles
@@ -82,6 +81,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 circleImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 
                 view.addSubview(circleImg)
+                circleImg.layer.zPosition = 1;
                 
                 //squares
                 let squareImg = UIImageView(image:#imageLiteral(resourceName: "square"))
@@ -95,6 +95,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 squareImg.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePan(_:))))
                 
                 view.addSubview(squareImg)
+                squareImg.layer.zPosition = 2;
                 }
             }
             indexCount += 1
