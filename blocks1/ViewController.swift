@@ -11,9 +11,10 @@ import UIKit
 class ViewController: UIViewController, UICollectionViewDelegate {
     
     //Color Arrays
-    var colorsRed: [Double] = [0.6, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0, /*8*/ 0.6, 0.2, 1.0, 0.6, 0.7, 0.8, 0.9, 1.0, 0.0, 0.9]
-    var colorsGreen: [Double] = [0.9, 0.8, 0.3, 0.6, 0.5, 0.4, 0.3, 1.0, /*8*/ 0.2, 0.6, 1.0, 1.0, 0.4, 0.3, 0.2, 0.1, 0.5, 0.8]
-    var colorsBlue: [Double] = [0.4, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 1.0, /*8*/ 0.8, 0.9, 1.0, 0.1, 0.2, 0.3, 0.4, 0.2, 0.3, 0.2]
+    var colorsRed: [Double] = [0.6, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, /*8*/ 1.0, 1.0, 0.2, 0.6, 0.7, 0.8, 0.9, 1.0, 0.0, 0.9]
+    var colorsGreen: [Double] = [0.9, 0.8, 0.3, 0.6, 0.5, 0.4, 0.2, 0.1, /*8*/ 1.0, 1.0, 0.6, 1.0, 0.4, 0.3, 0.2, 0.1, 0.5, 0.8]
+    var colorsBlue: [Double] = [0.4, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 0.5, /*8*/ 1.0, 1.0, 0.9, 0.1, 0.2, 0.3, 0.4, 0.2, 0.3, 0.2]
+    var colorsAlpha: [Double] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, /*8*/ 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     var scoreCounter = 0
     var arrayCounter = 0
     
@@ -65,6 +66,15 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         for i in 0...2 {
             for j in 1...6 {
                 
+                if indexCount == 8 || indexCount == 9 {
+                    let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
+                    circleImg.tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                    circleImg.center.x = CGFloat(initX + i * (imgWidth + padding))
+                    circleImg.center.y = CGFloat(initY + j * (imgWidth + padding))
+                    
+                    view.addSubview(circleImg)
+                }
+                else {
                 //circles
                 let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
                 circleImg.tintColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: 1.0)
@@ -75,15 +85,30 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 
                 //squares
                 let squareImg = UIImageView(image:#imageLiteral(resourceName: "square"))
-                squareImg.tintColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: 1.0)
+                squareImg.tintColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: CGFloat(colorsAlpha[arrayCounter]))
                 squareImg.center.x = CGFloat(initX + i * (imgWidth + padding))
                 squareImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 arrayCounter += 1
+                    
+                squareImg.isUserInteractionEnabled = true
+                    
+                squareImg.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: Selector(("handlePan:"))))
                 
                 view.addSubview(squareImg)
-                indexCount += 1
+                }
             }
+            indexCount += 1
+            print("the indexCount is #\(indexCount)")
         }
+    }
+    
+    @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
+        let translation = recognizer.translation(in: self.view)
+        if let view = recognizer.view {
+            view.center = CGPoint(x:view.center.x + translation.x,
+                                  y:view.center.y + translation.y)
+        }
+        recognizer.setTranslation(CGPoint.zero, in: self.view)
     }
     
     override func didReceiveMemoryWarning() {
