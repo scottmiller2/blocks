@@ -17,34 +17,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var scoreCounter = 0
     var arrayCounter = 0
     
-    let reuseIdentifier = "cell"
-    var items = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"]
-    
-    
-    // build a circle
-    var circleCount = 0
+    var indexCount = 0
     let diceRoll = 0
-    func makeCircle()
-    {
-    
-        let circlePath = UIBezierPath(arcCenter: CGPoint(x: 100,y: 100), radius: CGFloat(49), startAngle: CGFloat(0), endAngle:CGFloat(M_PI * 2), clockwise: true)
-        
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = circlePath.cgPath
-        
-        let diceRoll = Int(arc4random_uniform(UInt32(18)))
-        
-        print("The random number for diceRoll is #\(diceRoll)")
-        
-        let randColor = UIColor(red: CGFloat(colorsRed[diceRoll]), green: CGFloat(colorsGreen[diceRoll]), blue: CGFloat(colorsBlue[diceRoll]), alpha: CGFloat(1.0))
-        
-        //change the fill color
-        shapeLayer.fillColor = randColor.cgColor
-        print("The circle at index #\(circleCount) is color #\(randColor)")
-        
-        circleCount += 1
-        view.layer.addSublayer(shapeLayer)
-    }
+
     
     @IBOutlet weak var menuView: UIView!
     @IBOutlet weak var playButton: UIButton!
@@ -89,15 +64,24 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         for i in 0...2 {
             for j in 1...6 {
-                let img = UIImageView(image:#imageLiteral(resourceName: "square"))
                 
-                img.center.x = CGFloat(initX + i * (imgWidth + padding))
-                img.center.y = CGFloat(initY + j * (imgWidth + padding))
+                //circles
+                let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
+                circleImg.tintColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: 1.0)
+                circleImg.center.x = CGFloat(initX + i * (imgWidth + padding))
+                circleImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 
-                //var panRecognizer = UIPanGestureRecognizer(target:self.parent, action:"handlePan:")
-                //img.gestureRecognizers = [panRecognizer]
+                view.addSubview(circleImg)
                 
-                view.addSubview(img)
+                //squares
+                let squareImg = UIImageView(image:#imageLiteral(resourceName: "square"))
+                squareImg.tintColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: 1.0)
+                squareImg.center.x = CGFloat(initX + i * (imgWidth + padding))
+                squareImg.center.y = CGFloat(initY + j * (imgWidth + padding))
+                arrayCounter += 1
+                
+                view.addSubview(squareImg)
+                indexCount += 1
             }
         }
     }
