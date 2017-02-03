@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import GameKit
 
 class ViewController: UIViewController, UICollectionViewDelegate {
     
@@ -17,15 +18,16 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     @IBOutlet weak var blocksTopBar: UILabel!
     
     
-    var colorsRed: [Double] = [0.6, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, /*8*/ 1.0, 1.0, 0.2, 0.6, 0.7, 0.8, 0.9, 1.0, 0.0, 0.9]
-    var colorsGreen: [Double] = [0.9, 0.8, 0.3, 0.6, 0.5, 0.4, 0.2, 0.1, /*8*/ 1.0, 1.0, 0.6, 1.0, 0.4, 0.3, 0.2, 0.1, 0.5, 0.8]
-    var colorsBlue: [Double] = [0.4, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 0.5, /*8*/ 1.0, 1.0, 0.9, 0.1, 0.2, 0.3, 0.4, 0.2, 0.3, 0.2]
+    var colorsRed: [Double] = [0.6, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0, /*8*/ 1.0, 1.0, 0.2, 0.6, 0.5, 0.8, 0.9, 1.0, 0.0, 0.9]
+    var colorsGreen: [Double] = [0.9, 0.8, 0.3, 0.6, 0.7, 0.4, 0.1, 0.3, /*8*/ 1.0, 1.0, 0.6, 1.0, 0.5, 0.3, 0.2, 0.1, 0.5, 0.8]
+    var colorsBlue: [Double] = [0.4, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 0.5, /*8*/ 1.0, 1.0, 0.9, 0.1, 0.2, 0.3, 0.9, 0.2, 0.3, 0.2]
     var colorsAlpha: [Double] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, /*8*/ 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    var orderArray: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+    
     var scoreCounter = 0
     var arrayCounter = 0
     
     var indexCount = 0
-    let diceRoll = 0
 
     var seconds = 60
     var timer = Timer()
@@ -45,16 +47,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     
     override func viewDidLoad() {
         
-        //UI Mask View (prevent touching during menu state
-        
-        /*UI Menu
-        menuView.layer.zPosition = 4
-        self.menuView.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
-        menuView.layer.shadowColor = UIColor.black.cgColor
-        menuView.layer.shadowOpacity = 0.7
-        menuView.layer.shadowOffset = CGSize(width: 25, height: 20)
-        menuView.layer.shadowRadius = 15*/
-        
+        let shuffledArray: [Int] = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: orderArray) as! [Int]
+        print(shuffledArray)
         //label and background
         timerLabel.isHidden = true
         counterLabel.isHidden = true
@@ -67,8 +61,15 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         let padding = 10
         let imgWidth = 100
         
+        //setup for board shuffling
+        var nextPos = 0
+        
+        //begin creation of game pieces
         for i in 0...2 {
             for j in 1...6 {
+                
+                let randArrayVar = shuffledArray[nextPos]
+                print("randArrayVar: #\(randArrayVar)")
                 
                 if indexCount == 8 || indexCount == 9 {
                     let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
@@ -78,11 +79,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                     
                     view.addSubview(circleImg)
                     circleImg.layer.zPosition = 1;
+                    
+                    arrayCounter += 1
+                    indexCount += 1
                 }
                 else {
                 //circles
-                let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
-                circleImg.tintColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: 1.0)
+                    let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
+                circleImg.tintColor = UIColor(red: CGFloat(colorsRed[randArrayVar]), green: CGFloat(colorsGreen[randArrayVar]), blue: CGFloat(colorsBlue[randArrayVar]), alpha: 1.0)
                 circleImg.center.x = CGFloat(initX + i * (imgWidth + padding))
                 circleImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 
@@ -102,10 +106,13 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 
                 view.addSubview(squareImg)
                 squareImg.layer.zPosition = 2;
+                print("nextPos: #\(nextPos)")
+                print("indexCount: #\(indexCount)")
+                nextPos += 1
+                indexCount += 1
                 }
             }
-            indexCount += 1
-            print("the indexCount is #\(indexCount)")
+            
         }
     }
     
