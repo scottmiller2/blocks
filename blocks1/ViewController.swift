@@ -47,8 +47,28 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     
     override func viewDidLoad() {
         
-        let shuffledArray: [Int] = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: orderArray) as! [Int]
+        var shuffledArray: [Int] = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: orderArray) as! [Int]
         print(shuffledArray)
+        
+        //reorder the shuffled array so the two white circles are in index 8 and 9
+        for a in 0...17 {
+            print(a)
+            if shuffledArray[a] == 8 && shuffledArray[8] != 8 {
+                let element = shuffledArray.remove(at: a)
+                shuffledArray.insert(element, at: 8)
+                print(shuffledArray)
+            }
+            if shuffledArray[a] == 9 && shuffledArray[9] != 9 {
+                let element = shuffledArray.remove(at: a)
+                shuffledArray.insert(element, at: 9)
+                print(shuffledArray)
+            }
+            if shuffledArray[a] == 8 || shuffledArray[a] == 9 && a == 17{
+                let element = shuffledArray.remove(at: a)
+                shuffledArray.insert(element, at: 8)
+                print(shuffledArray)
+            }
+        }
         //label and background
         timerLabel.isHidden = true
         counterLabel.isHidden = true
@@ -69,9 +89,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             for j in 1...6 {
                 
                 let randArrayVar = shuffledArray[nextPos]
-                print("randArrayVar: #\(randArrayVar)")
                 
-                if indexCount == 8 || indexCount == 9 {
+                /*if indexCount == 8 || indexCount == 9 {
                     let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
                     circleImg.tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                     circleImg.center.x = CGFloat(initX + i * (imgWidth + padding))
@@ -84,7 +103,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                     arrayCounter += 1
                     indexCount += 1
                 }
-                else {
+                else {*/
+                
                 //circles
                     let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
                 circleImg.tintColor = UIColor(red: CGFloat(colorsRed[randArrayVar]), green: CGFloat(colorsGreen[randArrayVar]), blue: CGFloat(colorsBlue[randArrayVar]), alpha: 1.0)
@@ -109,9 +129,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 squareImg.layer.zPosition = 2;
                 print("nextPos: #\(nextPos)")
                 print("indexCount: #\(indexCount)")
+                print("randArrayVar: #\(randArrayVar)")
                 nextPos += 1
                 indexCount += 1
-                }
+                //}
             }
             
         }
