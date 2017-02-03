@@ -80,6 +80,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                     view.addSubview(circleImg)
                     circleImg.layer.zPosition = 1;
                     
+                    nextPos += 1
                     arrayCounter += 1
                     indexCount += 1
                 }
