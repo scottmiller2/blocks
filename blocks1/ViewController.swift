@@ -10,7 +10,13 @@ import UIKit
 
 class ViewController: UIViewController, UICollectionViewDelegate {
     
-    //Color Arrays
+
+    @IBOutlet weak var timerLabel: UILabel!
+    @IBOutlet weak var counterLabel: UILabel!
+    //@IBOutlet weak var blocksMenu: UILabel!
+    @IBOutlet weak var blocksTopBar: UILabel!
+    
+    
     var colorsRed: [Double] = [0.6, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, /*8*/ 1.0, 1.0, 0.2, 0.6, 0.7, 0.8, 0.9, 1.0, 0.0, 0.9]
     var colorsGreen: [Double] = [0.9, 0.8, 0.3, 0.6, 0.5, 0.4, 0.2, 0.1, /*8*/ 1.0, 1.0, 0.6, 1.0, 0.4, 0.3, 0.2, 0.1, 0.5, 0.8]
     var colorsBlue: [Double] = [0.4, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 0.5, /*8*/ 1.0, 1.0, 0.9, 0.1, 0.2, 0.3, 0.4, 0.2, 0.3, 0.2]
@@ -21,41 +27,41 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var indexCount = 0
     let diceRoll = 0
 
-    
-    @IBOutlet weak var playButton: UIButton!
-    @IBOutlet weak var timerLabel: UILabel!
-    @IBOutlet weak var counterLabel: UILabel!
-    @IBOutlet weak var helpButton: UIButton!
-    @IBOutlet weak var blocksMenu: UILabel!
-    @IBOutlet weak var blocksTopBar: UILabel!
-
     var seconds = 60
     var timer = Timer()
     var blockColor = 0.0
     
-    @IBAction func playButtonPressed(_ sender: AnyObject) {
-        helpButton.isHidden = true
+    @IBAction func menuPlayButtonPressed(_ sender: Any) {
         setupGame()
         timerLabel.isHidden = false
         counterLabel.isHidden = false
-        blocksMenu.isHidden = true
+        blocksTopBar.isHidden = false
     }
-    
+
     func setupGame()  {
     
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(ViewController.subtractTime), userInfo: nil, repeats: true)
-    
-        playButton.isHidden = true
-        blocksTopBar.isHidden = false
     }
     
     override func viewDidLoad() {
         
+        //UI Mask View (prevent touching during menu state
+        
+        /*UI Menu
+        menuView.layer.zPosition = 4
+        self.menuView.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
+        menuView.layer.shadowColor = UIColor.black.cgColor
+        menuView.layer.shadowOpacity = 0.7
+        menuView.layer.shadowOffset = CGSize(width: 25, height: 20)
+        menuView.layer.shadowRadius = 15*/
+        
+        //label and background
         timerLabel.isHidden = true
         counterLabel.isHidden = true
         blocksTopBar.isHidden = true
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
         
+        //setup for block and circle building
         let initX = 93
         let initY = 10
         let padding = 10
