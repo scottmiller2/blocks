@@ -52,8 +52,24 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         //reorder the shuffled array so the two white circles are in index 8 and 9
         for a in 0...17 {
-            print(a)
-            if shuffledArray[a] == 8 && shuffledArray[8] != 8 {
+            print("For loop index: #\(a)")
+            if shuffledArray[a] == 9 && shuffledArray[8] == 8{
+                let element = shuffledArray.remove(at: a)
+                shuffledArray.insert(element, at: 9)
+                print(shuffledArray)
+            }
+            if shuffledArray[a] == 9 && shuffledArray[8] != 8{
+                let element = shuffledArray.remove(at: a)
+                shuffledArray.insert(element, at: 8)
+                print(shuffledArray)
+            }
+            if shuffledArray[a] == 8 && shuffledArray[8] != 8{
+                let element = shuffledArray.remove(at: a)
+                shuffledArray.insert(element, at: 8)
+                print(shuffledArray)
+            }
+            
+            /*if shuffledArray[a] == 8 && shuffledArray[8] != 8 {
                 let element = shuffledArray.remove(at: a)
                 shuffledArray.insert(element, at: 8)
                 print(shuffledArray)
@@ -68,6 +84,13 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 shuffledArray.insert(element, at: 8)
                 print(shuffledArray)
             }
+            if shuffledArray[a] == 8 && shuffledArray[9] == 9{
+                let element = shuffledArray.remove(at: a)
+                let element2 = shuffledArray.remove(at: 9)
+                shuffledArray.insert(element, at: 8)
+                shuffledArray.insert(element2, at: 9)
+                print(shuffledArray)
+            }*/
         }
         //label and background
         timerLabel.isHidden = true
