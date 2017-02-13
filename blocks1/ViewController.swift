@@ -10,7 +10,6 @@ import UIKit
 import GameKit
 
 class ViewController: UIViewController, UICollectionViewDelegate {
-    
 
     @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet weak var counterLabel: UILabel!
@@ -24,6 +23,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var colorsAlpha: [Double] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, /*8*/ 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     var orderArray: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
     
+    
     var scoreCounter = 0
     var arrayCounter = 0
     
@@ -32,6 +32,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var seconds = 60
     var timer = Timer()
     var blockColor = 0.0
+    
+    var isDragging = false
     
     @IBAction func menuPlayButtonPressed(_ sender: Any) {
         setupGame()
@@ -68,30 +70,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 shuffledArray.insert(element, at: 8)
                 print(shuffledArray)
             }
-            
-            /*if shuffledArray[a] == 8 && shuffledArray[8] != 8 {
-                let element = shuffledArray.remove(at: a)
-                shuffledArray.insert(element, at: 8)
-                print(shuffledArray)
-            }
-            if shuffledArray[a] == 9 && shuffledArray[9] != 9 {
-                let element = shuffledArray.remove(at: a)
-                shuffledArray.insert(element, at: 9)
-                print(shuffledArray)
-            }
-            if shuffledArray[a] == 8 || shuffledArray[a] == 9 && a == 17{
-                let element = shuffledArray.remove(at: a)
-                shuffledArray.insert(element, at: 8)
-                print(shuffledArray)
-            }
-            if shuffledArray[a] == 8 && shuffledArray[9] == 9{
-                let element = shuffledArray.remove(at: a)
-                let element2 = shuffledArray.remove(at: 9)
-                shuffledArray.insert(element, at: 8)
-                shuffledArray.insert(element2, at: 9)
-                print(shuffledArray)
-            }*/
         }
+        
         //label and background
         timerLabel.isHidden = true
         counterLabel.isHidden = true
@@ -112,21 +92,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             for j in 1...6 {
                 
                 let randArrayVar = shuffledArray[nextPos]
-                
-                /*if indexCount == 8 || indexCount == 9 {
-                    let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
-                    circleImg.tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-                    circleImg.center.x = CGFloat(initX + i * (imgWidth + padding))
-                    circleImg.center.y = CGFloat(initY + j * (imgWidth + padding))
-                    
-                    view.addSubview(circleImg)
-                    circleImg.layer.zPosition = 1;
-                    
-                    nextPos += 1
-                    arrayCounter += 1
-                    indexCount += 1
-                }
-                else {*/
+
                 
                 //circles
                     let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
@@ -153,6 +119,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 print("nextPos: #\(nextPos)")
                 print("indexCount: #\(indexCount)")
                 print("randArrayVar: #\(randArrayVar)")
+                print(squareImg.center)
                 nextPos += 1
                 indexCount += 1
                 //}
@@ -161,13 +128,63 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         }
     }
     
+    /*override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let position = touch.location(in: self.view)
+            print(position.x)
+            print(position.y)
+        }
+    }*/
+    
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
         let translation = recognizer.translation(in: self.view)
-        if let view = recognizer.view {
-            view.center = CGPoint(x:view.center.x + translation.x,
-                                  y:view.center.y + translation.y)
+    
+        //if dragging = true and objectDragging == recognizer.view
+        //  allow it to do logic below
+        //  otherwise exit.. this will let us only drag one object at a time
+        
+        if recognizer.state == UIGestureRecognizerState.began {
+            isDragging = true
+            
+            let objectDragging = self.view //wrong
+            
+            print("bg color of block \(objectDragging?.backgroundColor)")
+            
+            //if isDragging = true && objectMoving == recognizer.view {
+                
+            //}
+            
+            
+            //initial position
+            //which object - objectDragging
         }
-        recognizer.setTranslation(CGPoint.zero, in: self.view)
+        else if recognizer.state == UIGestureRecognizerState.ended {
+            isDragging = false
+        }
+        else {
+            //dragging
+            //initPosition converted to nearest grid position
+            //check if view.center is "allowed"
+            //no further than 1 unit away up/down/side
+            //Bound cgpoint to no further than 1 unit away
+            //var cgp:CGPoint = CGPoint(x:view.center.x + translation.x,
+            //  y:view.center.y + translation.y)
+            
+            //if distance(cgp, initPoint) > padding + imgWidth:
+            //(cgp - initPoint).normalize * (padding+imgWidth)
+            //normalize = (x,y)/length of (x,y)
+            
+            //plain english. if distance between current point and initial point is greater
+            //than one grid unit, take the direction of the vector, shorten it to a unit vector,
+            //use the unit vector to calculate one grid unit in that direction
+            
+            if let view = recognizer.view {
+                view.center = CGPoint(x:view.center.x + translation.x,
+                                      y:view.center.y + translation.y)
+            }
+            recognizer.setTranslation(CGPoint.zero, in: self.view)
+            //if object matches object in recognizer
+        }
     }
     
     override func didReceiveMemoryWarning() {
