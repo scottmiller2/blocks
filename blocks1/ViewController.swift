@@ -35,6 +35,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var timer = Timer()
     var blockColor = 0.0
     
+    var objectDragging = 0
     var isDragging = false
     
     @IBAction func menuPlayButtonPressed(_ sender: Any) {
@@ -54,9 +55,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     func setTags() {
         for a in 0...17 {
             for b in 0...17{
-            let storeColor = myCircles[a].tintColor
-            if myBlocks[b].tintColor == storeColor {
-                myCircles[a].tag = myBlocks[b].tag
+                let storeColor = myCircles[a].tintColor
+                if myBlocks[b].tintColor == storeColor {
+                    myCircles[a].tag = b
+                    myBlocks[b].tag = b
                 }
             }
         }
@@ -131,7 +133,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 squareImg.center.x = CGFloat(initX + i * (imgWidth + padding))
                 squareImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 
-                squareImg.tag = arrayCounter
+                //squareImg.tag = arrayCounter
                 
                 myBlocks.append(squareImg)
                 
@@ -158,12 +160,15 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         for y in 0...17{
         print("myCircles index \(y)")
         print("tag #\(myCircles[y].tag)")
+        print("color \(myCircles[y].tintColor)")
+            
         }
     }
     
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
         let translation = recognizer.translation(in: self.view)
         let objectDragging = recognizer.view?.tag
+        
         
         //1
         //if dragging = true and objectDragging == recognizer.view
@@ -176,16 +181,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         if recognizer.state == UIGestureRecognizerState.began {
             
+            let val1 = myBlocks[objectDragging!].center.x
+            let val2 = myBlocks[objectDragging!].center.x
+            
             isDragging = true
             print(objectDragging ?? 0)
+            print(myBlocks[objectDragging!])
             
-            if myBlocks[objectDragging!].bounds.contains(myCircles[objectDragging!].bounds) &&  myBlocks[objectDragging!].tag == myCircles[objectDragging!].tag {
-                myBlocks[objectDragging!].isHidden = true
-                myCircles[objectDragging!].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-            }
-
-            
-            //print("the tag of the object your touching is \(myBlocks[objectDragging!])")
+            print("the tag of the object your touching is \(myBlocks[objectDragging!])")
             
             //if isDragging = true && objectMoving == recognizer.view {
                 
@@ -197,17 +200,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         }
         else if recognizer.state == UIGestureRecognizerState.ended {
             isDragging = false
-            
-            if myBlocks[objectDragging!].bounds.contains(myCircles[objectDragging!].bounds) &&  myBlocks[objectDragging!].tag == myCircles[objectDragging!].tag {
-                    myBlocks[objectDragging!].isHidden = true
-                    myCircles[objectDragging!].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-            }
-
-            
-            /*if (myBlocks[objectDragging!].bounds.contains(myCircles[objectDragging!].bounds)) {
-                myBlocks[objectDragging!].isHidden = true
-                myCircles[objectDragging!].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-            }*/
             
         }
         else {
