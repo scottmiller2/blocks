@@ -23,6 +23,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var colorsAlpha: [Double] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, /*8*/ 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     var orderArray: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
     
+    var myBlocks = [UIImageView]()
+    var myCircles = [UIImageView]()
     
     var scoreCounter = 0
     var arrayCounter = 0
@@ -47,30 +49,40 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(ViewController.subtractTime), userInfo: nil, repeats: true)
     }
     
+    
+    //step through circle array and match tint colors to match tags
+    func setTags() {
+        for a in 0...17 {
+            for b in 0...17{
+            let storeColor = myCircles[a].tintColor
+            if myBlocks[b].tintColor == storeColor {
+                myCircles[a].tag = myBlocks[b].tag
+                }
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         
         var shuffledArray: [Int] = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: orderArray) as! [Int]
-        print(shuffledArray)
+        //print(shuffledArray)
+        
+        
         
         //reorder the shuffled array so the two white circles are in index 8 and 9
         for a in 0...17 {
-            print("For loop index: #\(a)")
-            if shuffledArray[a] == 9 && shuffledArray[8] == 8{
-                let element = shuffledArray.remove(at: a)
-                shuffledArray.insert(element, at: 9)
-                print(shuffledArray)
+            if shuffledArray[a] == 8 {
+            let element = shuffledArray[8]
+                shuffledArray[a] = element
+                shuffledArray[8] = 8
             }
-            if shuffledArray[a] == 9 && shuffledArray[8] != 8{
-                let element = shuffledArray.remove(at: a)
-                shuffledArray.insert(element, at: 8)
-                print(shuffledArray)
-            }
-            if shuffledArray[a] == 8 && shuffledArray[8] != 8{
-                let element = shuffledArray.remove(at: a)
-                shuffledArray.insert(element, at: 8)
-                print(shuffledArray)
+            else if shuffledArray[a] == 9 {
+                let element = shuffledArray[9]
+                shuffledArray[a] = element
+                shuffledArray[9] = 9
             }
         }
+        //print(shuffledArray)
         
         //label and background
         timerLabel.isHidden = true
@@ -95,12 +107,22 @@ class ViewController: UIViewController, UICollectionViewDelegate {
 
                 
                 //circles
-                    let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
+                
+                let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
                 circleImg.tintColor = UIColor(red: CGFloat(colorsRed[randArrayVar]), green: CGFloat(colorsGreen[randArrayVar]), blue: CGFloat(colorsBlue[randArrayVar]), alpha: 1.0)
                 circleImg.center.x = CGFloat(initX + i * (imgWidth + padding))
                 circleImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 
+                //tag the circle with the index we're currently on
+                //circleImg.tag = arrayCounter
+                
+                //add the image to the circle array
+                myCircles.append(circleImg)
+                
+                //add the circle to the screen
                 view.addSubview(circleImg)
+                
+                //set the layer position of the circle
                 circleImg.layer.zPosition = 1;
                 
                 //squares
@@ -108,47 +130,62 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 squareImg.tintColor = UIColor(red: CGFloat(colorsRed[arrayCounter]), green: CGFloat(colorsGreen[arrayCounter]), blue: CGFloat(colorsBlue[arrayCounter]), alpha: CGFloat(colorsAlpha[arrayCounter]))
                 squareImg.center.x = CGFloat(initX + i * (imgWidth + padding))
                 squareImg.center.y = CGFloat(initY + j * (imgWidth + padding))
-                arrayCounter += 1
+                
+                squareImg.tag = arrayCounter
+                
+                myBlocks.append(squareImg)
+                
+                //arrayCounter += 1
                     
                 squareImg.isUserInteractionEnabled = true
                     
                 squareImg.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePan(_:))))
                 
                 view.addSubview(squareImg)
+                arrayCounter += 1
                 squareImg.layer.zPosition = 2;
-                print("nextPos: #\(nextPos)")
-                print("indexCount: #\(indexCount)")
-                print("randArrayVar: #\(randArrayVar)")
-                print(squareImg.center)
+                //print(squareImg.center)
                 nextPos += 1
                 indexCount += 1
                 //}
             }
             
         }
-    }
-    
-    /*override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let touch = touches.first {
-            let position = touch.location(in: self.view)
-            print(position.x)
-            print(position.y)
+        //hides the two white invisible squares built to index 8 and 9
+        myBlocks[8].isHidden = true
+        myBlocks[9].isHidden = true
+        setTags()
+        for y in 0...17{
+        print("myCircles index \(y)")
+        print("tag #\(myCircles[y].tag)")
         }
-    }*/
+    }
     
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
         let translation = recognizer.translation(in: self.view)
-    
+        let objectDragging = recognizer.view?.tag
+        
+        //1
         //if dragging = true and objectDragging == recognizer.view
         //  allow it to do logic below
         //  otherwise exit.. this will let us only drag one object at a time
+
+        //1
+        //if isDragging == true && objectDragging == recognizer.view?.tag {
+        //}
         
         if recognizer.state == UIGestureRecognizerState.began {
+            
             isDragging = true
+            print(objectDragging ?? 0)
             
-            let objectDragging = self.view //wrong
+            if myBlocks[objectDragging!].bounds.contains(myCircles[objectDragging!].bounds) &&  myBlocks[objectDragging!].tag == myCircles[objectDragging!].tag {
+                myBlocks[objectDragging!].isHidden = true
+                myCircles[objectDragging!].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            }
+
             
-            print("bg color of block \(objectDragging?.backgroundColor)")
+            //print("the tag of the object your touching is \(myBlocks[objectDragging!])")
             
             //if isDragging = true && objectMoving == recognizer.view {
                 
@@ -160,6 +197,18 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         }
         else if recognizer.state == UIGestureRecognizerState.ended {
             isDragging = false
+            
+            if myBlocks[objectDragging!].bounds.contains(myCircles[objectDragging!].bounds) &&  myBlocks[objectDragging!].tag == myCircles[objectDragging!].tag {
+                    myBlocks[objectDragging!].isHidden = true
+                    myCircles[objectDragging!].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            }
+
+            
+            /*if (myBlocks[objectDragging!].bounds.contains(myCircles[objectDragging!].bounds)) {
+                myBlocks[objectDragging!].isHidden = true
+                myCircles[objectDragging!].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            }*/
+            
         }
         else {
             //dragging
