@@ -13,7 +13,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
 
     @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet weak var counterLabel: UILabel!
-    //@IBOutlet weak var blocksMenu: UILabel!
     @IBOutlet weak var blocksTopBar: UILabel!
     
     
@@ -38,40 +37,39 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var objectDragging = 0
     var isDragging = false
     
-    @IBAction func menuPlayButtonPressed(_ sender: Any) {
+    /*@IBAction func menuPlayButtonPressed(_ sender: Any) {
         setupGame()
         timerLabel.isHidden = false
         counterLabel.isHidden = false
         blocksTopBar.isHidden = false
-    }
+    }*/
 
     func setupGame()  {
-    
+        timerLabel.isHidden = false
+        counterLabel.isHidden = false
+        blocksTopBar.isHidden = false
+        
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(ViewController.subtractTime), userInfo: nil, repeats: true)
     }
     
     
-    //step through circle array and match tint colors to match tags
+    //Step through circle array and match tint colors to match tags
     func setTags() {
-        for a in 0...17 {
-            for b in 0...17{
-                let storeColor = myCircles[a].tintColor
-                if myBlocks[b].tintColor == storeColor {
-                    myCircles[a].tag = b
-                    myBlocks[b].tag = b
+            for x in myBlocks {
+            for y in myCircles {
+                if x.tintColor == y.tintColor {
+                    x.tag = y.tag
                 }
             }
         }
     }
     
     override func viewDidLoad() {
-        
+        //Shuffle the array
         var shuffledArray: [Int] = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: orderArray) as! [Int]
-        //print(shuffledArray)
+
         
-        
-        
-        //reorder the shuffled array so the two white circles are in index 8 and 9
+        //Reorder the shuffled array so the two white circles are in index 8 and 9
         for a in 0...17 {
             if shuffledArray[a] == 8 {
             let element = shuffledArray[8]
@@ -84,21 +82,20 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 shuffledArray[9] = 9
             }
         }
-        //print(shuffledArray)
         
-        //label and background
+        //Label and background
         timerLabel.isHidden = true
         counterLabel.isHidden = true
         blocksTopBar.isHidden = true
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
         
-        //setup for block and circle building
+        //Setup for block and circle building
         let initX = 93
         let initY = 10
         let padding = 10
         let imgWidth = 100
         
-        //setup for board shuffling
+        //Setup for board shuffling
         var nextPos = 0
         
         //begin creation of game pieces
@@ -115,12 +112,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 circleImg.center.x = CGFloat(initX + i * (imgWidth + padding))
                 circleImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 
-                //tag the circle with the index we're currently on
-                //circleImg.tag = arrayCounter
-                
                 //add the image to the circle array
                 myCircles.append(circleImg)
-                
+                myCircles[arrayCounter].tag = arrayCounter
                 //add the circle to the screen
                 view.addSubview(circleImg)
                 
@@ -133,11 +127,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 squareImg.center.x = CGFloat(initX + i * (imgWidth + padding))
                 squareImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 
-                //squareImg.tag = arrayCounter
-                
                 myBlocks.append(squareImg)
-                
-                //arrayCounter += 1
                     
                 squareImg.isUserInteractionEnabled = true
                     
@@ -151,58 +141,66 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 indexCount += 1
                 //}
             }
-            
         }
-        //hides the two white invisible squares built to index 8 and 9
+        //Call to set the tags for the circles and blocks on the screen
+        setTags()
+        
+        //Hide the two white squares built to index 8 and 9 (above the two white circles)
         myBlocks[8].isHidden = true
         myBlocks[9].isHidden = true
-        setTags()
+        
+        //Print out the index and tags, as well as tintColors
         for y in 0...17{
-        print("myCircles index \(y)")
-        print("tag #\(myCircles[y].tag)")
-        print("color \(myCircles[y].tintColor)")
-            
+        print("index \(y)")
+        print("myBlocks tag \(myBlocks[y].tag)")
+        print("block color \(myBlocks[y].tintColor)")
+        print("circle tag \(myCircles[y].tag)")
+        print("circle color \(myCircles[y].tintColor)")
         }
     }
     
+    //Handle the movements
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
         let translation = recognizer.translation(in: self.view)
         let objectDragging = recognizer.view?.tag
         
-        
-        //1
-        //if dragging = true and objectDragging == recognizer.view
-        //  allow it to do logic below
-        //  otherwise exit.. this will let us only drag one object at a time
-
-        //1
-        //if isDragging == true && objectDragging == recognizer.view?.tag {
-        //}
-        
         if recognizer.state == UIGestureRecognizerState.began {
             
-            let val1 = myBlocks[objectDragging!].center.x
-            let val2 = myBlocks[objectDragging!].center.x
-            
             isDragging = true
-            print(objectDragging ?? 0)
-            print(myBlocks[objectDragging!])
+            
+            print(objectDragging)
+            //print(myBlocks[objectDragging!])
             
             print("the tag of the object your touching is \(myBlocks[objectDragging!])")
             
-            //if isDragging = true && objectMoving == recognizer.view {
-                
-            //}
-            
-            
-            //initial position
-            //which object - objectDragging
         }
         else if recognizer.state == UIGestureRecognizerState.ended {
             isDragging = false
             
+            let pos1 = myBlocks[objectDragging!].center
+            let pos2 = myCircles[myBlocks[objectDragging!].tag].center
+            
+            if (100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))
+            {
+                print("match")
+                myBlocks[objectDragging!].isHidden = true
+                myCircles[myBlocks[objectDragging!].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            }
+            
+            
         }
         else {
+            let pos1 = myBlocks[objectDragging!].center
+            let pos2 = myCircles[myBlocks[objectDragging!].tag].center
+            
+            if (100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))
+            {
+                print("match")
+                myBlocks[objectDragging!].isHidden = true
+                myCircles[myBlocks[objectDragging!].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            }
+
+            
             //dragging
             //initPosition converted to nearest grid position
             //check if view.center is "allowed"
