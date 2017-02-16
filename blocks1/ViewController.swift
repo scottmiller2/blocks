@@ -52,7 +52,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(ViewController.subtractTime), userInfo: nil, repeats: true)
     }
     
-    
     //Step through circle array and match tint colors to match tags
     func setTags() {
             for x in myBlocks {
@@ -152,70 +151,55 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         //Print out the index and tags, as well as tintColors
         for y in 0...17{
         print("index \(y)")
-        print("myBlocks tag \(myBlocks[y].tag)")
+        print("BLOCK tag \(myBlocks[y].tag)")
         print("block color \(myBlocks[y].tintColor)")
-        print("circle tag \(myCircles[y].tag)")
+        print("CIRCLE tag \(myCircles[y].tag)")
         print("circle color \(myCircles[y].tintColor)")
+        print("")
         }
+        
     }
     
     //Handle the movements
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
         let translation = recognizer.translation(in: self.view)
         let objectDragging = recognizer.view?.tag
+        let pos1 = myBlocks[objectDragging!].center
+        let pos2 = myCircles[myBlocks[objectDragging!].tag].center
+        view.setNeedsDisplay()
         
-        if recognizer.state == UIGestureRecognizerState.began {
-            
-            isDragging = true
-            
-            print(objectDragging)
-            //print(myBlocks[objectDragging!])
-            
-            print("the tag of the object your touching is \(myBlocks[objectDragging!])")
-            
+        if (recognizer.state == UIGestureRecognizerState.began) && ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y))) && myBlocks[objectDragging!].tintColor == myCircles[myBlocks[objectDragging!].tag].tintColor) {
+            print("recognizer state began 1st if")
+            print("match")
+            myBlocks[objectDragging!].isHidden = true
+            myCircles[myBlocks[objectDragging!].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            //print("the tag of the object your touching is \(myBlocks[objectDragging!])")
+            view.setNeedsDisplay()
         }
-        else if recognizer.state == UIGestureRecognizerState.ended {
-            isDragging = false
-            
-            let pos1 = myBlocks[objectDragging!].center
-            let pos2 = myCircles[myBlocks[objectDragging!].tag].center
-            
-            if (100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))
-            {
+    
+        else if (recognizer.state == UIGestureRecognizerState.changed) && ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y))) && myBlocks[objectDragging!].tintColor == myCircles[myBlocks[objectDragging!].tag].tintColor) {
+            print("recognizer state began 1st if")
+            print("match")
+            myBlocks[objectDragging!].isHidden = true
+            myCircles[myBlocks[objectDragging!].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            //print("the tag of the object your touching is \(myBlocks[objectDragging!])")
+            view.setNeedsDisplay()
+        }
+    
+        else if (recognizer.state == UIGestureRecognizerState.ended) && ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))) {
+            print("recognizer state ended (not in the if")
+            if (100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y))) && myBlocks[objectDragging!].tag == myCircles[myBlocks[objectDragging!].tag].tag {
+                print("recognizer state ended (in the if)")
                 print("match")
                 myBlocks[objectDragging!].isHidden = true
                 myCircles[myBlocks[objectDragging!].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                view.setNeedsDisplay()
             }
             
             
         }
         else {
-            let pos1 = myBlocks[objectDragging!].center
-            let pos2 = myCircles[myBlocks[objectDragging!].tag].center
-            
-            if (100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))
-            {
-                print("match")
-                myBlocks[objectDragging!].isHidden = true
-                myCircles[myBlocks[objectDragging!].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-            }
-
-            
-            //dragging
-            //initPosition converted to nearest grid position
-            //check if view.center is "allowed"
-            //no further than 1 unit away up/down/side
-            //Bound cgpoint to no further than 1 unit away
-            //var cgp:CGPoint = CGPoint(x:view.center.x + translation.x,
-            //  y:view.center.y + translation.y)
-            
-            //if distance(cgp, initPoint) > padding + imgWidth:
-            //(cgp - initPoint).normalize * (padding+imgWidth)
-            //normalize = (x,y)/length of (x,y)
-            
-            //plain english. if distance between current point and initial point is greater
-            //than one grid unit, take the direction of the vector, shorten it to a unit vector,
-            //use the unit vector to calculate one grid unit in that direction
+            view.setNeedsDisplay()
             
             if let view = recognizer.view {
                 view.center = CGPoint(x:view.center.x + translation.x,
