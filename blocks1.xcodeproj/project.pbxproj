@@ -10,11 +10,11 @@
 		5F1130CA1DB81CD20012B007 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1130C91DB81CD20012B007 /* AppDelegate.swift */; };
 		5F1130CC1DB81CD20012B007 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1130CB1DB81CD20012B007 /* ViewController.swift */; };
 		5F1130CF1DB81CD20012B007 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F1130CD1DB81CD20012B007 /* Main.storyboard */; };
-		5F1130D11DB81CD20012B007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F1130D01DB81CD20012B007 /* Assets.xcassets */; };
 		5F1130D41DB81CD20012B007 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F1130D21DB81CD20012B007 /* LaunchScreen.storyboard */; };
 		5F1130DF1DB81CD20012B007 /* blocks1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1130DE1DB81CD20012B007 /* blocks1Tests.swift */; };
 		5F1130EA1DB81CD30012B007 /* blocks1UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1130E91DB81CD30012B007 /* blocks1UITests.swift */; };
 		5F14365F1DD138F100B14401 /* MyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F14365E1DD138F100B14401 /* MyCollectionViewCell.swift */; };
+		5F53FE331E5EA62300BE617B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F53FE321E5EA62300BE617B /* Assets.xcassets */; };
 		5F8474B41E43F82300FADFBA /* Lombok.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8474B31E43F58700FADFBA /* Lombok.otf */; };
 /* End PBXBuildFile section */
 
@@ -40,7 +40,6 @@
 		5F1130C91DB81CD20012B007 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F1130CB1DB81CD20012B007 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		5F1130CE1DB81CD20012B007 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		5F1130D01DB81CD20012B007 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F1130D31DB81CD20012B007 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5F1130D51DB81CD20012B007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5F1130DA1DB81CD20012B007 /* blocks1Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blocks1Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,6 +49,7 @@
 		5F1130E91DB81CD30012B007 /* blocks1UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = blocks1UITests.swift; sourceTree = "<group>"; };
 		5F1130EB1DB81CD30012B007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5F14365E1DD138F100B14401 /* MyCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyCollectionViewCell.swift; sourceTree = "<group>"; };
+		5F53FE321E5EA62300BE617B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F8474B31E43F58700FADFBA /* Lombok.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lombok.otf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -106,8 +106,8 @@
 				5F14365E1DD138F100B14401 /* MyCollectionViewCell.swift */,
 				5F1130CD1DB81CD20012B007 /* Main.storyboard */,
 				5F8474B21E43F56600FADFBA /* Resources */,
-				5F1130D01DB81CD20012B007 /* Assets.xcassets */,
 				5F1130D21DB81CD20012B007 /* LaunchScreen.storyboard */,
+				5F53FE321E5EA62300BE617B /* Assets.xcassets */,
 				5F1130D51DB81CD20012B007 /* Info.plist */,
 			);
 			path = blocks1;
@@ -248,7 +248,7 @@
 			files = (
 				5F8474B41E43F82300FADFBA /* Lombok.otf in Resources */,
 				5F1130D41DB81CD20012B007 /* LaunchScreen.storyboard in Resources */,
-				5F1130D11DB81CD20012B007 /* Assets.xcassets in Resources */,
+				5F53FE331E5EA62300BE617B /* Assets.xcassets in Resources */,
 				5F1130CF1DB81CD20012B007 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
