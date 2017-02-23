@@ -6,6 +6,12 @@
 //  Copyright © 2016 Scott Miller. All rights reserved.
 //
 
+//Feb 22
+//To Do:
+//Movement
+//Click Blocks label on top to pause (brings up a mid-game menu with a help and continue button.
+
+
 import UIKit
 import GameKit
 
@@ -36,13 +42,12 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     
     //counting
     var moveCounter = 0
-    var scoreCounter = 0 //unness?
     var arrayCounter = 0
     var circleLocation = 0
     var matchCounter = 0
     
     //timing
-    var seconds = 60
+    var seconds = 30
     var timer = Timer()
     
     //movement variables
@@ -74,7 +79,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         timerLabel.isHidden = false
         
         //Set view background
-        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "menuBG.jpg")!)
+        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PreBG.jpg")!)
         
         //Build the menu box
         menuView = UIView(frame: CGRect(x: 0, y: 0, width: 270, height: 270))
@@ -97,7 +102,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         //Menu label (Blocks title)
         menuLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
-        menuLabel.font = UIFont(name: "Helvetica", size: 45.0)
+        menuLabel.font = UIFont(name: "Lombok", size: 45.0)
         menuLabel.center = CGPoint(x: 160, y: 285)
         menuLabel.textAlignment = .center
         menuLabel.text = "Blocks"
@@ -113,7 +118,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         menuLabel.center = self.view.center
         menuLabel.center.x = self.view.center.x
-        menuLabel.center.y = self.view.center.y - 60
+        menuLabel.center.y = self.view.center.y - 55
         
         //Menu play button
         menuPlay = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
@@ -146,17 +151,18 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         //Game top title (middle)
         gameTopTitle = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
-        gameTopTitle.font = UIFont(name: "Helvetica", size: 40)
+        gameTopTitle.font = UIFont(name: "Lombok", size: 45)
         gameTopTitle.center = CGPoint(x: 160, y: 285)
         gameTopTitle.textAlignment = .center
         gameTopTitle.text = "Blocks"
         gameTopTitle.layer.zPosition = 1;
         gameTopTitle.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         self.view.addSubview(gameTopTitle)
+        gameTopTitle.isHidden = true
         
         gameTopTitle.center = self.view.center
         gameTopTitle.center.x = self.view.center.x
-        gameTopTitle.center.y = self.view.center.y - 335
+        gameTopTitle.center.y = self.view.center.y - 330
         
         //Game top counter (right side)
         gameTopCounter = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
@@ -171,7 +177,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         gameTopCounter.center = self.view.center
         gameTopCounter.center.x = self.view.center.x + 150
-        gameTopCounter.center.y = self.view.center.y - 335
+        gameTopCounter.center.y = self.view.center.y - 334
 
         
         print("In preGame")
@@ -184,6 +190,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         for x in myBlocks {
             x.removeFromSuperview()
         }
+        
+        //Set view background
+        //self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PostBG.jpg")!)
         
         gameTopTitle.isHidden = true
         gameTopCounter.isHidden = true
@@ -210,7 +219,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         //Blocks title
         menuLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 55))
-        menuLabel.font = UIFont(name: "Helvetica", size: 40)
+        menuLabel.font = UIFont(name: "Lombok", size: 40)
         menuLabel.center = CGPoint(x: 160, y: 285)
         menuLabel.textAlignment = .center
         menuLabel.text = "Blocks"
@@ -278,7 +287,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         arrayCounter = 0
         matchCounter = 0
         moveCounter = 0
-        seconds = 60
+        seconds = 30
         
         gameTopCounter.isHidden = false
         
@@ -294,7 +303,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         timerLabel.center = self.view.center
         timerLabel.center.x = self.view.center.x - 150
-        timerLabel.center.y = self.view.center.y - 335
+        timerLabel.center.y = self.view.center.y - 334
         
         gameTopTitle.isHidden = false
         
@@ -376,6 +385,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         //Hide the two white squares built to index 8 and 9 (above the two white circles)
         myBlocks[8].isHidden = true
         myBlocks[9].isHidden = true
+        myBlocks[8].removeFromSuperview()
+        myBlocks[9].removeFromSuperview()
         
         //Call to set the tags for the circles and blocks on the screen
         setTags()
