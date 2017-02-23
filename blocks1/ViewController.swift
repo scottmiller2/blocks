@@ -16,9 +16,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     @IBOutlet weak var blocksTopBar: UILabel!
     
     
-    var colorsRed: [Double] = [0.6, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0, /*8*/ 1.0, 1.0, 0.2, 0.6, 0.5, 0.8, 0.9, 1.0, 0.0, 0.9]
-    var colorsGreen: [Double] = [0.9, 0.8, 0.3, 0.6, 0.7, 0.4, 0.1, 0.3, /*8*/ 1.0, 1.0, 0.6, 1.0, 0.5, 0.3, 0.2, 0.1, 0.5, 0.8]
-    var colorsBlue: [Double] = [0.4, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 0.5, /*8*/ 1.0, 1.0, 0.9, 0.1, 0.2, 0.3, 0.9, 0.2, 0.3, 0.2]
+    var colorsRed: [Double] = [1.0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.9, /*8*/ 1.0, 1.0, 0.2, 0.6, 0.5, 0.8, 0.9, 0.6, 0.0, 0.9]
+    var colorsGreen: [Double] = [0.1, 0.8, 0.3, 0.6, 0.7, 0.4, 0.1, 0.3, /*8*/ 1.0, 1.0, 0.6, 1.0, 0.5, 0.3, 0.2, 0.9, 0.5, 0.8]
+    var colorsBlue: [Double] = [0.2, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 0.5, /*8*/ 1.0, 1.0, 0.9, 0.1, 0.2, 0.3, 0.9, 0.4, 0.3, 0.2]
     var colorsAlpha: [Double] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, /*8*/ 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     var orderArray: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
     
@@ -62,31 +62,15 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             }
         }
     }
-    
+
     func checkMatch(){
         
-        //get array position of the tag
-        for y in myCircles {
-            if y.tag == objectDragging {
-                yMatchTag = objectDragging
-            }
-        }
-        
-        //get array position of the tag
-        for x in myBlocks{
-            if x.tag == objectDragging {
-            xMatchTag = objectDragging
-            print(myBlocks[xMatchTag])
-            print(myBlocks[xMatchTag].tag)
-            }
-        }
-        
         for _ in myBlocks {
-        if (100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y))) && myBlocks[xMatchTag].tag == myCircles[yMatchTag].tag {
+        if (100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y))) {
             
             print("match made in checkMatch")
-            myBlocks[xMatchTag].isHidden = true
-            myCircles[yMatchTag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            myBlocks[objectDragging].isHidden = true
+            myCircles[myBlocks[objectDragging].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
             }
         }
 
@@ -144,6 +128,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 myCircles.append(circleImg)
                 myCircles[arrayCounter].tag = arrayCounter
                 
+                
+                
                 //add the circle to the screen
                 view.addSubview(circleImg)
                 
@@ -176,6 +162,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         //Call to set the tags for the circles and blocks on the screen
         setTags()
 
+
         //******* Debugging ********//
         //Print out the index and tags, as well as tintColors
         for y in 0...17{
@@ -196,29 +183,36 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
         let translation = recognizer.translation(in: self.view)
         
-        
         objectDragging = (recognizer.view?.tag)!
         
         pos1 = myBlocks[objectDragging].center
         pos2 = myCircles[myBlocks[objectDragging].tag].center
+        
+        
         
         switch(recognizer.state) {
         case .began:
             
             print("the tag of our selected image = \(objectDragging)")
 
+        case .changed:
+            
+        
+            print("index 0 center: \(myBlocks[1].center)")
+            print("objectDragging center: \(myBlocks[objectDragging].center)")
             
         case .ended:
             
-            if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y))) && myBlocks[objectDragging].tintColor == myCircles[myBlocks[objectDragging].tag].tintColor) {
+            print("in .ended")
+            if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))) {
+                
+                //checkMatch()
                 
                 print("match made in .ended")
                 myBlocks[objectDragging].isHidden = true
                 myCircles[myBlocks[objectDragging].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                 
             }
-            
-            //checkMatch()
 
         default:
             break
@@ -229,18 +223,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                                   y:view.center.y + translation.y)
         }
         recognizer.setTranslation(CGPoint.zero, in: self.view)
-
-        
-        /*
-         else {
-            
-            if let view = recognizer.view {
-                view.center = CGPoint(x:view.center.x + translation.x,
-                                      y:view.center.y + translation.y)
-            }
-            recognizer.setTranslation(CGPoint.zero, in: self.view)
-            //if object matches object in recognizer
-        }*/
     }
     
     override func didReceiveMemoryWarning() {
