@@ -26,9 +26,12 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var myCircles = [UIImageView]()
     
     //counting
-    var scoreCounter = 0
+    var moveCounter = 0
+    var scoreCounter = 0 //unness?
     var arrayCounter = 0
-
+    var circleLocation = 0
+    var matchCounter = 0
+    
     //timing
     var seconds = 60
     var timer = Timer()
@@ -53,13 +56,12 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     }
     
     //Step through circle array and match tint colors to match tags
+
     func setTags() {
-            for x in myBlocks {
-            for y in myCircles {
-                if x.tintColor == y.tintColor {
-                    x.tag = y.tag
-                }
-            }
+        var tagCount = 0
+        for x in myBlocks {
+            x.tag = tagCount
+            tagCount += 1
         }
     }
 
@@ -70,7 +72,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             
             print("match made in checkMatch")
             myBlocks[objectDragging].isHidden = true
-            myCircles[myBlocks[objectDragging].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            myCircles[circleLocation].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
             }
         }
 
@@ -162,7 +164,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         //Call to set the tags for the circles and blocks on the screen
         setTags()
 
-
         //******* Debugging ********//
         //Print out the index and tags, as well as tintColors
         for y in 0...17{
@@ -175,8 +176,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         }
         
         
-        //call to check for initial matches
-        //checkMatch()
+        /* Check here for initial game load matches? */
     }
     
     //**** Handle the movements ***** //
@@ -184,35 +184,40 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         let translation = recognizer.translation(in: self.view)
         
         objectDragging = (recognizer.view?.tag)!
+        var counter = 0
+        
+        
+        for x in myCircles {
+            if myBlocks[objectDragging].tintColor == x.tintColor {
+                circleLocation = counter
+            }
+            counter += 1
+        }
         
         pos1 = myBlocks[objectDragging].center
-        pos2 = myCircles[myBlocks[objectDragging].tag].center
-        
-        
+        //pos2 = myCircles[myBlocks[objectDragging].tag].center
+        pos2 = myCircles[circleLocation].center
         
         switch(recognizer.state) {
-        case .began:
-            
-            print("the tag of our selected image = \(objectDragging)")
-
-        case .changed:
-            
-        
-            print("index 0 center: \(myBlocks[1].center)")
-            print("objectDragging center: \(myBlocks[objectDragging].center)")
             
         case .ended:
             
-            print("in .ended")
-            if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))) {
+            if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))) && myBlocks[objectDragging].tintColor == myCircles[circleLocation].tintColor {
                 
-                //checkMatch()
-                
-                print("match made in .ended")
                 myBlocks[objectDragging].isHidden = true
-                myCircles[myBlocks[objectDragging].tag].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                myCircles[circleLocation].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                 
+                matchCounter += 1
+                
+                print("Match Count: \(matchCounter)")
+                if matchCounter == 17 {
+                    print("All matches made")
+                }
             }
+            else {
+                moveCounter += 1
+            }
+            print("Move Counter: \(moveCounter)")
 
         default:
             break
