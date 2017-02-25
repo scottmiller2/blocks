@@ -6,10 +6,15 @@
 //  Copyright © 2016 Scott Miller. All rights reserved.
 //
 
+//Notes
+
 //Feb 22
-//To Do:
+
 //Movement
 //Click Blocks label on top to pause (brings up a mid-game menu with a help and continue button.
+
+//Feb 24
+//Trophies/achievments (Under 30 moves, popup slides down on top
 
 
 import UIKit
@@ -18,7 +23,6 @@ import GameKit
 class ViewController: UIViewController, UICollectionViewDelegate {
 
     @IBOutlet weak var counterLabel: UILabel!
-    
     
     var colorsRed: [Double] = [1.0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.9, /*8*/ 1.0, 1.0, 0.2, 0.6, 0.5, 0.8, 0.9, 0.6, 0.0, 0.9]
     var colorsGreen: [Double] = [0.1, 0.8, 0.3, 0.6, 0.7, 0.4, 0.1, 0.3, /*8*/ 1.0, 1.0, 0.6, 1.0, 0.5, 0.3, 0.2, 0.9, 0.5, 0.8]
@@ -39,16 +43,20 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var timerLabel = UILabel()
     var gameTopTitle = UILabel()
     var gameTopCounter = UILabel()
+    var outOfTimeLabel = UILabel()
+    var allMatchesLabel = UILabel()
     
     //counting
     var moveCounter = 0
     var arrayCounter = 0
     var circleLocation = 0
     var matchCounter = 0
+    var score = 0
     
     //timing
-    var seconds = 30
+    var seconds = 60
     var timer = Timer()
+    var outOfTime = false
     
     //movement variables
     var objectDragging = 0
@@ -60,6 +68,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     
     var xMatchTag = 0
     var yMatchTag = 0
+    var allMatches = false
+
     
     /** Menu **/
     
@@ -121,7 +131,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         menuLabel.center.y = self.view.center.y - 55
         
         //Menu play button
-        menuPlay = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
+        menuPlay = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
         menuPlay.backgroundColor = UIColor(red: 0.3, green: 0.7, blue: 0.9, alpha: 0.9)
         //menuPlay.titleLabel?.font = UIFont.init(name: "Helvetica", size:30)
         menuPlay.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
@@ -133,10 +143,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         menuPlay.center = self.view.center
         menuPlay.center.x = self.view.center.x
-        menuPlay.center.y = self.view.center.y + 40
+        menuPlay.center.y = self.view.center.y + 45
         
         //Menu help button
-        menuHelp = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
+        menuHelp = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
         menuHelp.backgroundColor = UIColor(red: 0.1, green: 0.4, blue: 0.8, alpha: 0.9)
         menuHelp.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
         menuHelp.setTitle("HELP", for: .normal)
@@ -164,22 +174,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         gameTopTitle.center.x = self.view.center.x
         gameTopTitle.center.y = self.view.center.y - 330
         
-        //Game top counter (right side)
-        gameTopCounter = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
-        gameTopCounter.font = UIFont(name: "Helvetica", size: 35)
-        gameTopCounter.center = CGPoint(x: 160, y: 285)
-        gameTopCounter.textAlignment = .center
-        gameTopCounter.text = "\(moveCounter)"
-        gameTopCounter.layer.zPosition = 1;
-        gameTopCounter.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        self.view.addSubview(gameTopCounter)
-        gameTopCounter.isHidden = true
-        
-        gameTopCounter.center = self.view.center
-        gameTopCounter.center.x = self.view.center.x + 150
-        gameTopCounter.center.y = self.view.center.y - 334
-
-        
         print("In preGame")
     }
 
@@ -195,7 +189,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         //self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PostBG.jpg")!)
         
         gameTopTitle.isHidden = true
-        gameTopCounter.isHidden = true
+        gameTopCounter.isHidden = false
         
         timer.invalidate()
         
@@ -219,7 +213,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         //Blocks title
         menuLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 55))
-        menuLabel.font = UIFont(name: "Lombok", size: 40)
+        menuLabel.font = UIFont(name: "Lombok", size: 48)
         menuLabel.center = CGPoint(x: 160, y: 285)
         menuLabel.textAlignment = .center
         menuLabel.text = "Blocks"
@@ -237,22 +231,43 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         menuLabel.center.x = self.view.center.x
         menuLabel.center.y = self.view.center.y - 80
         
-        //Score label
-        scoreLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
-        scoreLabel.font = UIFont(name: "Helvetica", size: 25.0)
-        scoreLabel.center = CGPoint(x: 160, y: 285)
-        scoreLabel.textAlignment = .center
-        scoreLabel.text = "Moves: \(moveCounter)"
-        scoreLabel.layer.zPosition = 1;
-        scoreLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        self.view.addSubview(scoreLabel)
+        if allMatches == true {
+            allMatchesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
+            allMatchesLabel.font = UIFont(name: "Helvetica", size: 20.0)
+            allMatchesLabel.center = CGPoint(x: 160, y: 285)
+            allMatchesLabel.textAlignment = .center
+            allMatchesLabel.text = "You matched them all!"
+            allMatchesLabel.layer.zPosition = 1;
+            allMatchesLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+            self.view.addSubview(allMatchesLabel)
+            
+            allMatchesLabel.center = self.view.center
+            allMatchesLabel.center.x = self.view.center.x
+            allMatchesLabel.center.y = self.view.center.y - 30
+            allMatches = false
+            allMatchesLabel.isHidden = false
+        }
         
-        scoreLabel.center = self.view.center
-        scoreLabel.center.x = self.view.center.x
-        scoreLabel.center.y = self.view.center.y - 13
+        //Out of time / All matches made
+        else if outOfTime == true {
+        outOfTimeLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        outOfTimeLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        outOfTimeLabel.center = CGPoint(x: 160, y: 285)
+        outOfTimeLabel.textAlignment = .center
+        outOfTimeLabel.text = "Out of time."
+        outOfTimeLabel.layer.zPosition = 1;
+        outOfTimeLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        self.view.addSubview(outOfTimeLabel)
+        
+        outOfTimeLabel.center = self.view.center
+        outOfTimeLabel.center.x = self.view.center.x
+        outOfTimeLabel.center.y = self.view.center.y - 30
+        outOfTime = false
+        outOfTimeLabel.isHidden = false
+        }
         
         //Post game play button
-        postGamePlayButton = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
+        postGamePlayButton = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
         postGamePlayButton.backgroundColor = UIColor(red: 0.2, green: 0.6, blue: 0.8, alpha: 0.9)
         postGamePlayButton.setTitle("Play Again", for: .normal)
         postGamePlayButton.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
@@ -262,10 +277,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         postGamePlayButton.center = self.view.center
         postGamePlayButton.center.x = self.view.center.x
-        postGamePlayButton.center.y = self.view.center.y + 40
+        postGamePlayButton.center.y = self.view.center.y + 45
         
         //Post game help button
-        menuHelp = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
+        menuHelp = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
         menuHelp.backgroundColor = UIColor(red: 0.0, green: 0.3, blue: 0.7, alpha: 0.9)
         menuHelp.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
         menuHelp.setTitle("Help", for: .normal)
@@ -277,6 +292,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         menuHelp.center = self.view.center
         menuHelp.center.x = self.view.center.x
         menuHelp.center.y = self.view.center.y + 105
+        
+        gameTopCounter.removeFromSuperview()
 
         
     }
@@ -287,9 +304,11 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         arrayCounter = 0
         matchCounter = 0
         moveCounter = 0
-        seconds = 30
+        seconds = 35
         
         gameTopCounter.isHidden = false
+        outOfTimeLabel.isHidden = true
+        allMatchesLabel.isHidden = true
         
         //Timer label
         timerLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
@@ -306,6 +325,20 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         timerLabel.center.y = self.view.center.y - 334
         
         gameTopTitle.isHidden = false
+        
+        //Game top counter (right side)
+        gameTopCounter = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
+        gameTopCounter.font = UIFont(name: "Helvetica", size: 35)
+        gameTopCounter.center = CGPoint(x: 160, y: 285)
+        gameTopCounter.textAlignment = .center
+        gameTopCounter.text = "\(moveCounter)"
+        gameTopCounter.layer.zPosition = 1;
+        gameTopCounter.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        self.view.addSubview(gameTopCounter)
+        
+        gameTopCounter.center = self.view.center
+        gameTopCounter.center.x = self.view.center.x + 150
+        gameTopCounter.center.y = self.view.center.y - 334
         
         //Shuffle the array
         var shuffledArray: [Int] = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: orderArray) as! [Int]
@@ -383,10 +416,12 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         }
         
         //Hide the two white squares built to index 8 and 9 (above the two white circles)
-        myBlocks[8].isHidden = true
-        myBlocks[9].isHidden = true
+        //myBlocks[8].isHidden = true
+        //myBlocks[9].isHidden = true
         myBlocks[8].removeFromSuperview()
         myBlocks[9].removeFromSuperview()
+        //myBlocks[8].isUserInteractionEnabled = false
+        //myBlocks[9].isUserInteractionEnabled = false
         
         //Call to set the tags for the circles and blocks on the screen
         setTags()
@@ -431,6 +466,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         scoreLabel.isHidden = true
         menuHelp.isHidden = true
         
+        //seemed to have fixed the bug with the label lingering
+        outOfTimeLabel.isHidden = true
+        allMatchesLabel.isHidden = true
+        
         setupGame()
     }
     
@@ -464,7 +503,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         }
         
         pos1 = myBlocks[objectDragging].center
-        //pos2 = myCircles[myBlocks[objectDragging].tag].center
         pos2 = myCircles[circleLocation].center
         
         switch(recognizer.state) {
@@ -478,15 +516,21 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 
                 matchCounter += 1
                 
-                print("Match Count: \(matchCounter)")
-                if matchCounter == 16 || seconds == 0 {
+                if matchCounter == 16{
+                allMatches = true
+                scoreLabel.isHidden = false
+                allMatchesLabel.isHidden = false
+                postGame()
+                }
+                else if seconds == 0{
+                outOfTime = true
                 postGame()
                 }
             }
             else {
                 moveCounter += 1
+                gameTopCounter.text = "\(moveCounter)"
             }
-            print("Move Counter: \(moveCounter)")
 
         default:
             break
@@ -510,6 +554,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         if(seconds == 0)  {
             timer.invalidate()
+            outOfTime = true
             postGame()
         }
         else if (seconds <= 10) {
