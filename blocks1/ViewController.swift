@@ -8,13 +8,16 @@
 
 //Notes
 
+//Feb 25
+//Added new code in "new code" tags. Also added a "validMatch" variable to my match check statement
+
+//Feb 24
+//Trophies/achievments (Under 30 moves, popup slides down on top
+
 //Feb 22
 
 //Movement
 //Click Blocks label on top to pause (brings up a mid-game menu with a help and continue button.
-
-//Feb 24
-//Trophies/achievments (Under 30 moves, popup slides down on top
 
 
 import UIKit
@@ -30,6 +33,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var colorsAlpha: [Double] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, /*8*/ 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     var orderArray: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
     
+    //Block and Circle arrays
     var myBlocks = [UIImageView]()
     var myCircles = [UIImageView]()
     
@@ -37,14 +41,21 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var menuLabel = UILabel()
     var menuPlay = UIButton()
     var menuHelp = UIButton()
-    var postGameView = UIView()
-    var postGamePlayButton = UIButton()
-    var scoreLabel = UILabel()
+    //var scoreLabel = UILabel()
     var timerLabel = UILabel()
     var gameTopTitle = UILabel()
     var gameTopCounter = UILabel()
     var outOfTimeLabel = UILabel()
     var allMatchesLabel = UILabel()
+    
+    //Post game
+    var postGameView = UIView()
+    var postGamePlayButton = UIButton()
+    
+    var statsMatchesLabel = UILabel()
+    var statsMovesLabel = UILabel()
+    var statsTimeLabel = UILabel()
+    var statsScoreLabel = UILabel()
     
     //counting
     var moveCounter = 0
@@ -54,13 +65,16 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var score = 0
     
     //timing
-    var seconds = 60
+    var seconds = 0
     var timer = Timer()
     var outOfTime = false
     
     //movement variables
     var objectDragging = 0
     var isDragging = false
+    var initPosx = 0
+    var initPosy = 0
+    var validMove = false
     
     //match checking
     var pos1 = CGPoint (x: 0.0, y: 0.0)
@@ -87,6 +101,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         //Configure Labels
         timerLabel.isHidden = false
+        statsMatchesLabel.isHidden = true
+        statsMovesLabel.isHidden = true
+        statsTimeLabel.isHidden = true
+        statsScoreLabel.isHidden = true
         
         //Set view background
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PreBG.jpg")!)
@@ -185,6 +203,12 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             x.removeFromSuperview()
         }
         
+        initPosx = 0
+        initPosy = 0
+        
+        score = moveCounter - seconds
+
+        
         //Set view background
         //self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PostBG.jpg")!)
         
@@ -233,7 +257,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         if allMatches == true {
             allMatchesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
-            allMatchesLabel.font = UIFont(name: "Helvetica", size: 20.0)
+            allMatchesLabel.font = UIFont(name: "Helvetica", size: 22.0)
             allMatchesLabel.center = CGPoint(x: 160, y: 285)
             allMatchesLabel.textAlignment = .center
             allMatchesLabel.text = "You matched them all!"
@@ -243,7 +267,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             
             allMatchesLabel.center = self.view.center
             allMatchesLabel.center.x = self.view.center.x
-            allMatchesLabel.center.y = self.view.center.y - 30
+            allMatchesLabel.center.y = self.view.center.y - 22
             allMatches = false
             allMatchesLabel.isHidden = false
         }
@@ -251,25 +275,86 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         //Out of time / All matches made
         else if outOfTime == true {
         outOfTimeLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
-        outOfTimeLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        outOfTimeLabel.font = UIFont(name: "Helvetica", size: 22.0)
         outOfTimeLabel.center = CGPoint(x: 160, y: 285)
         outOfTimeLabel.textAlignment = .center
-        outOfTimeLabel.text = "Out of time."
+        outOfTimeLabel.text = "You ran out of time"
         outOfTimeLabel.layer.zPosition = 1;
         outOfTimeLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         self.view.addSubview(outOfTimeLabel)
         
         outOfTimeLabel.center = self.view.center
         outOfTimeLabel.center.x = self.view.center.x
-        outOfTimeLabel.center.y = self.view.center.y - 30
+        outOfTimeLabel.center.y = self.view.center.y - 22
         outOfTime = false
         outOfTimeLabel.isHidden = false
         }
         
+        //Stats (Time)
+        statsTimeLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        statsTimeLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        statsTimeLabel.center = CGPoint(x: 160, y: 285)
+        statsTimeLabel.textAlignment = .center
+        statsTimeLabel.text = "Time left: \(seconds)"
+        statsTimeLabel.layer.zPosition = 1;
+        statsTimeLabel.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.8, alpha: 1.0)
+        self.view.addSubview(statsTimeLabel)
+        
+        statsTimeLabel.center = self.view.center
+        statsTimeLabel.center.x = self.view.center.x - 60
+        statsTimeLabel.center.y = self.view.center.y + 27
+        statsTimeLabel.isHidden = false
+        
+        //Stats (Matches)
+        statsMatchesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        statsMatchesLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        statsMatchesLabel.center = CGPoint(x: 160, y: 285)
+        statsMatchesLabel.textAlignment = .center
+        statsMatchesLabel.text = "Matches: \(matchCounter)"
+        statsMatchesLabel.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.8, alpha: 1.0)
+        statsMatchesLabel.layer.zPosition = 1;
+        self.view.addSubview(statsMatchesLabel)
+        
+        statsMatchesLabel.center = self.view.center
+        statsMatchesLabel.center.x = self.view.center.x - 60
+        statsMatchesLabel.center.y = self.view.center.y + 57
+        statsMatchesLabel.isHidden = false
+        
+        //Stats (Moves)
+        statsMovesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        statsMovesLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        statsMovesLabel.center = CGPoint(x: 160, y: 285)
+        statsMovesLabel.textAlignment = .center
+        statsMovesLabel.text = "Moves: \(moveCounter)"
+        statsMovesLabel.layer.zPosition = 1;
+        statsMovesLabel.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.8, alpha: 1.0)
+        self.view.addSubview(statsMovesLabel)
+        
+        statsMovesLabel.center = self.view.center
+        statsMovesLabel.center.x = self.view.center.x + 60
+        statsMovesLabel.center.y = self.view.center.y + 27
+        statsMovesLabel.isHidden = false
+        
+        //Stats (Score)
+        statsScoreLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        statsScoreLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        statsScoreLabel.center = CGPoint(x: 160, y: 285)
+        statsScoreLabel.textAlignment = .center
+        statsScoreLabel.text = "Score: \(score)"
+        statsScoreLabel.layer.zPosition = 1;
+        statsScoreLabel.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.8, alpha: 1.0)
+        self.view.addSubview(statsScoreLabel)
+        
+        statsScoreLabel.center = self.view.center
+        statsScoreLabel.center.x = self.view.center.x + 60
+        statsScoreLabel.center.y = self.view.center.y + 57
+        statsScoreLabel.isHidden = false
+        
+        
         //Post game play button
         postGamePlayButton = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
         postGamePlayButton.backgroundColor = UIColor(red: 0.2, green: 0.6, blue: 0.8, alpha: 0.9)
-        postGamePlayButton.setTitle("Play Again", for: .normal)
+        postGamePlayButton.setTitle("Menu", for: .normal)
         postGamePlayButton.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
         postGamePlayButton.addTarget(self, action:#selector(self.postGamePlayButtonClicked), for: .touchUpInside)
         self.view.addSubview(postGamePlayButton)
@@ -277,21 +362,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         postGamePlayButton.center = self.view.center
         postGamePlayButton.center.x = self.view.center.x
-        postGamePlayButton.center.y = self.view.center.y + 45
+        postGamePlayButton.center.y = self.view.center.y + 105
         
-        //Post game help button
-        menuHelp = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
-        menuHelp.backgroundColor = UIColor(red: 0.0, green: 0.3, blue: 0.7, alpha: 0.9)
-        menuHelp.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
-        menuHelp.setTitle("Help", for: .normal)
-        menuHelp.addTarget(self, action:#selector(self.menuHelpButtonClicked), for: .touchUpInside)
-        self.view.addSubview(menuHelp)
-        menuHelp.layer.zPosition = 1;
-        
-        
-        menuHelp.center = self.view.center
-        menuHelp.center.x = self.view.center.x
-        menuHelp.center.y = self.view.center.y + 105
+
         
         gameTopCounter.removeFromSuperview()
 
@@ -301,13 +374,18 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         print("In setupGame")
         
+        
+        myBlocks.removeAll()
+        myCircles.removeAll()
+        
         arrayCounter = 0
         matchCounter = 0
         moveCounter = 0
-        seconds = 35
+        seconds = 30
         
         gameTopCounter.isHidden = false
         outOfTimeLabel.isHidden = true
+        allMatchesLabel.text = ""
         allMatchesLabel.isHidden = true
         
         //Timer label
@@ -403,6 +481,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 squareImg.center.y = CGFloat(initY + j * (imgWidth + padding))
                 
                 myBlocks.append(squareImg)
+                myBlocks[arrayCounter].tag = arrayCounter
                 
                 squareImg.isUserInteractionEnabled = true
                 
@@ -416,15 +495,13 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         }
         
         //Hide the two white squares built to index 8 and 9 (above the two white circles)
-        //myBlocks[8].isHidden = true
-        //myBlocks[9].isHidden = true
         myBlocks[8].removeFromSuperview()
         myBlocks[9].removeFromSuperview()
-        //myBlocks[8].isUserInteractionEnabled = false
-        //myBlocks[9].isUserInteractionEnabled = false
+        myBlocks[8].isHidden = true
+        myBlocks[9].isHidden = true
         
         //Call to set the tags for the circles and blocks on the screen
-        setTags()
+        //setTags()
         
         //******* Debugging ********//
         //Print out the index and tags, as well as tintColors
@@ -432,6 +509,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             print("index \(y)")
             print("BLOCK tag \(myBlocks[y].tag)")
             print("block color \(myBlocks[y].tintColor)")
+            print("block center.x \(myBlocks[y].center.x)")
+            print("block center.y \(myBlocks[y].center.y)")
             print("CIRCLE tag \(myCircles[y].tag)")
             print("circle color \(myCircles[y].tintColor)")
             print("")
@@ -463,25 +542,26 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         postGameView.isHidden = true
         postGamePlayButton.isHidden = true
         menuLabel.isHidden = true
-        scoreLabel.isHidden = true
+        //scoreLabel.isHidden = true //unness?
         menuHelp.isHidden = true
         
         //seemed to have fixed the bug with the label lingering
         outOfTimeLabel.isHidden = true
         allMatchesLabel.isHidden = true
         
-        setupGame()
+        preGame()
+        //setupGame()
     }
     
     //Step through circle array and match tint colors to match tags
 
-    func setTags() {
+    /*func setTags() {
         var tagCount = 0
         for x in myBlocks {
             x.tag = tagCount
             tagCount += 1
         }
-    }
+    }*/ //unnessecary with new setup?
     
     override func viewDidLoad() {
         preGame()
@@ -506,10 +586,38 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         pos2 = myCircles[circleLocation].center
         
         switch(recognizer.state) {
+        case .began:
+            
+            initPosx = Int(recognizer.view!.center.x)
+            initPosy = Int(recognizer.view!.center.y)
+            
+            print("Recognizer.view")
+            print(recognizer.view!)
+            print("")
+            print("Pos2")
+            print(pos2)
+            print("")
             
         case .ended:
+            /* New Code */
             
-            if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)))) && myBlocks[objectDragging].tintColor == myCircles[circleLocation].tintColor {
+            for x in myBlocks {
+            if (100 / 2 > sqrt((pos1.x - x.center.x) * (pos1.x - x.center.x) + (pos1.y - x.center.y) * (pos1.y - x.center.y))) {
+                if ((x.tag != objectDragging) && (x.isHidden != true)) {
+                    myBlocks[objectDragging].center.x = CGFloat(initPosx)
+                    myBlocks[objectDragging].center.y = CGFloat(initPosy)
+                    moveCounter -= 1
+                    validMove = false
+                    }
+                else {
+                    validMove = true
+                    }
+                }
+            }
+            
+            /* End New Code */
+            
+            if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)) && (myBlocks[objectDragging].tintColor == myCircles[circleLocation].tintColor) && (validMove == true))) {
                 
                 myBlocks[objectDragging].isHidden = true
                 myCircles[circleLocation].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -518,7 +626,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 
                 if matchCounter == 16{
                 allMatches = true
-                scoreLabel.isHidden = false
+                //scoreLabel.isHidden = false
                 allMatchesLabel.isHidden = false
                 postGame()
                 }
