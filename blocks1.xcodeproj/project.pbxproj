@@ -14,6 +14,7 @@
 		5F1130DF1DB81CD20012B007 /* blocks1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1130DE1DB81CD20012B007 /* blocks1Tests.swift */; };
 		5F1130EA1DB81CD30012B007 /* blocks1UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F1130E91DB81CD30012B007 /* blocks1UITests.swift */; };
 		5F14365F1DD138F100B14401 /* MyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F14365E1DD138F100B14401 /* MyCollectionViewCell.swift */; };
+		5F303B791E628E7C00440F58 /* lilly.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F303B781E628E7C00440F58 /* lilly.mp3 */; };
 		5F53FE331E5EA62300BE617B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F53FE321E5EA62300BE617B /* Assets.xcassets */; };
 		5F8474B41E43F82300FADFBA /* Lombok.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8474B31E43F58700FADFBA /* Lombok.otf */; };
 /* End PBXBuildFile section */
@@ -49,6 +50,7 @@
 		5F1130E91DB81CD30012B007 /* blocks1UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = blocks1UITests.swift; sourceTree = "<group>"; };
 		5F1130EB1DB81CD30012B007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5F14365E1DD138F100B14401 /* MyCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyCollectionViewCell.swift; sourceTree = "<group>"; };
+		5F303B781E628E7C00440F58 /* lilly.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = lilly.mp3; sourceTree = "<group>"; };
 		5F53FE321E5EA62300BE617B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F8474B31E43F58700FADFBA /* Lombok.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lombok.otf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -85,6 +87,7 @@
 				5F1130DD1DB81CD20012B007 /* blocks1Tests */,
 				5F1130E81DB81CD30012B007 /* blocks1UITests */,
 				5F1130C71DB81CD20012B007 /* Products */,
+				5F303B781E628E7C00440F58 /* lilly.mp3 */,
 			);
 			sourceTree = "<group>";
 		};
@@ -250,6 +253,7 @@
 				5F8474B41E43F82300FADFBA /* Lombok.otf in Resources */,
 				5F1130D41DB81CD20012B007 /* LaunchScreen.storyboard in Resources */,
 				5F53FE331E5EA62300BE617B /* Assets.xcassets in Resources */,
+				5F303B791E628E7C00440F58 /* lilly.mp3 in Resources */,
 				5F1130CF1DB81CD20012B007 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

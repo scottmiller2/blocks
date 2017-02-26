@@ -22,6 +22,8 @@
 
 import UIKit
 import GameKit
+import AVFoundation
+import AudioToolbox
 
 class ViewController: UIViewController, UICollectionViewDelegate {
 
@@ -40,13 +42,23 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var menuView = UIView()
     var menuLabel = UILabel()
     var menuPlay = UIButton()
+    var menuProfile = UIButton()
     var menuHelp = UIButton()
-    //var scoreLabel = UILabel()
     var timerLabel = UILabel()
     var gameTopTitle = UILabel()
     var gameTopCounter = UILabel()
     var outOfTimeLabel = UILabel()
     var allMatchesLabel = UILabel()
+    var profileBackToMenu = UIButton()
+    
+    var vibrationSwitch = UISwitch()
+    var musicSwitch = UISwitch()
+    
+    var player: AVAudioPlayer?
+    var vibrationText = UILabel()
+    var musicText = UILabel()
+    var allowVibrations = true
+    var allowMusic = true
     
     //Post game
     var postGameView = UIView()
@@ -106,11 +118,12 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsTimeLabel.isHidden = true
         statsScoreLabel.isHidden = true
         
+        
         //Set view background
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PreBG.jpg")!)
         
         //Build the menu box
-        menuView = UIView(frame: CGRect(x: 0, y: 0, width: 270, height: 270))
+        menuView = UIView(frame: CGRect(x: 0, y: 0, width: 270, height: 330))
         menuView.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
         self.view.addSubview(menuView)
         menuView.layer.zPosition = 1;
@@ -163,6 +176,20 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         menuPlay.center.x = self.view.center.x
         menuPlay.center.y = self.view.center.y + 45
         
+        //Menu profile button
+        menuProfile = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
+        menuProfile.backgroundColor = UIColor(red: 0.1, green: 0.3, blue: 0.8, alpha: 0.6)
+        //menuPlay.titleLabel?.font = UIFont.init(name: "Helvetica", size:30)
+        menuProfile.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
+        menuProfile.setTitle("PROFILE", for: .normal)
+        menuProfile.addTarget(self, action:#selector(self.menuProfileButtonClicked), for: .touchUpInside)
+        self.view.addSubview(menuProfile)
+        menuProfile.layer.zPosition = 1;
+        
+        menuProfile.center = self.view.center
+        menuProfile.center.x = self.view.center.x
+        menuProfile.center.y = self.view.center.y + 105
+        
         //Menu help button
         menuHelp = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
         menuHelp.backgroundColor = UIColor(red: 0.1, green: 0.4, blue: 0.8, alpha: 0.9)
@@ -175,7 +202,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         menuHelp.center = self.view.center
         menuHelp.center.x = self.view.center.x
-        menuHelp.center.y = self.view.center.y + 105
+        menuHelp.center.y = self.view.center.y + 165
         
         //Game top title (middle)
         gameTopTitle = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
@@ -191,6 +218,83 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         gameTopTitle.center = self.view.center
         gameTopTitle.center.x = self.view.center.x
         gameTopTitle.center.y = self.view.center.y - 330
+        
+        //Vibration text
+        vibrationText = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
+        vibrationText.font = UIFont(name: "Helvetica", size: 20)
+        vibrationText.textAlignment = .center
+        vibrationText.text = "Vibrations"
+        self.view!.addSubview(vibrationText)
+        vibrationText.layer.zPosition = 1
+        vibrationText.center = self.view.center
+        vibrationText.center.x = self.view.center.x - 35
+        vibrationText.center.y = self.view.center.y - 80
+        
+        //Vibration switch
+        vibrationSwitch = UISwitch(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
+        vibrationSwitch.isOn = true
+        vibrationSwitch.setOn(true, animated: false)
+        vibrationSwitch.addTarget(self, action: #selector(vibrationSwitchValueDidChange), for: .valueChanged)
+        self.view!.addSubview(vibrationSwitch)
+        vibrationSwitch.layer.zPosition = 1
+        
+        vibrationSwitch.center = self.view.center
+        vibrationSwitch.center.x = self.view.center.x + 45
+        vibrationSwitch.center.y = self.view.center.y - 80
+        
+        //Music text
+        musicText = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
+        musicText.font = UIFont(name: "Helvetica", size: 20)
+        musicText.textAlignment = .center
+        musicText.text = "Music"
+        self.view!.addSubview(musicText)
+        musicText.layer.zPosition = 1
+        
+        musicText.center = self.view.center
+        musicText.center.x = self.view.center.x - 15
+        musicText.center.y = self.view.center.y - 125
+        
+        //Music switch
+        musicSwitch = UISwitch(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
+        musicSwitch.isOn = true
+        musicSwitch.setOn(true, animated: false)
+        musicSwitch.addTarget(self, action: #selector(musicSwitchValueDidChange), for: .valueChanged)
+        self.view!.addSubview(musicSwitch)
+        musicSwitch.layer.zPosition = 1
+        
+        musicSwitch.center = self.view.center
+        musicSwitch.center.x = self.view.center.x + 45
+        musicSwitch.center.y = self.view.center.y - 125
+        
+        //Menu help button
+        profileBackToMenu = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
+        profileBackToMenu.backgroundColor = UIColor(red: 0.3, green: 0.7, blue: 0.9, alpha: 0.9)
+        profileBackToMenu.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
+        profileBackToMenu.setTitle("MENU", for: .normal)
+        profileBackToMenu.addTarget(self, action:#selector(self.profileBackToMenuButtonClicked), for: .touchUpInside)
+        self.view.addSubview(profileBackToMenu)
+        profileBackToMenu.layer.zPosition = 1;
+        
+        
+        profileBackToMenu.center = self.view.center
+        profileBackToMenu.center.x = self.view.center.x
+        profileBackToMenu.center.y = self.view.center.y + 165
+        
+        musicText.isHidden = true
+        musicSwitch.isHidden = true
+        vibrationText.isHidden = true
+        vibrationSwitch.isHidden = true
+        profileBackToMenu.isHidden = true
+        
+        let musicDefaults = UserDefaults.standard
+        let vibrationDefaults = UserDefaults.standard
+        
+        if (musicDefaults.object(forKey: "MusicSwitchState") != nil) {
+            musicSwitch.isOn = musicDefaults.bool(forKey: "MusicSwitchState")
+        }
+        if (vibrationDefaults.object(forKey: "VibrationSwitchState") != nil) {
+            vibrationSwitch.isOn = vibrationDefaults.bool(forKey: "VibrationSwitchState")
+        }
         
         print("In preGame")
     }
@@ -297,7 +401,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsTimeLabel.textAlignment = .center
         statsTimeLabel.text = "Time left: \(seconds)"
         statsTimeLabel.layer.zPosition = 1;
-        statsTimeLabel.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.8, alpha: 1.0)
+        statsTimeLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)
         self.view.addSubview(statsTimeLabel)
         
         statsTimeLabel.center = self.view.center
@@ -311,7 +415,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsMatchesLabel.center = CGPoint(x: 160, y: 285)
         statsMatchesLabel.textAlignment = .center
         statsMatchesLabel.text = "Matches: \(matchCounter)"
-        statsMatchesLabel.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.8, alpha: 1.0)
+        statsMatchesLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)
         statsMatchesLabel.layer.zPosition = 1;
         self.view.addSubview(statsMatchesLabel)
         
@@ -327,7 +431,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsMovesLabel.textAlignment = .center
         statsMovesLabel.text = "Moves: \(moveCounter)"
         statsMovesLabel.layer.zPosition = 1;
-        statsMovesLabel.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.8, alpha: 1.0)
+        statsMovesLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)
         self.view.addSubview(statsMovesLabel)
         
         statsMovesLabel.center = self.view.center
@@ -342,7 +446,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsScoreLabel.textAlignment = .center
         statsScoreLabel.text = "Score: \(score)"
         statsScoreLabel.layer.zPosition = 1;
-        statsScoreLabel.textColor = UIColor(red: 0.2, green: 0.7, blue: 0.8, alpha: 1.0)
+        statsScoreLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)
         self.view.addSubview(statsScoreLabel)
         
         statsScoreLabel.center = self.view.center
@@ -374,6 +478,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         print("In setupGame")
         
+        if musicSwitch.isOn {
+        playGameMusic()
+        }
         
         myBlocks.removeAll()
         myCircles.removeAll()
@@ -387,6 +494,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         outOfTimeLabel.isHidden = true
         allMatchesLabel.text = ""
         allMatchesLabel.isHidden = true
+        vibrationSwitch.isHidden = true
+        profileBackToMenu.isHidden = true
+        menuProfile.isHidden = true
+        
         
         //Timer label
         timerLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
@@ -532,9 +643,35 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         setupGame()
     }
+    func menuProfileButtonClicked() {
+        print("Play Button Clicked")
+        menuProfile.isHidden = true
+        vibrationSwitch.isHidden = false
+        vibrationText.isHidden = false
+        musicSwitch.isHidden = false
+        musicText.isHidden = false
+        menuPlay.isHidden = true
+        menuLabel.isHidden = true
+        menuHelp.isHidden = true
+        profileBackToMenu.isHidden = false
+
+    }
     func menuHelpButtonClicked() {
         print("Help Button Clicked")
         UIApplication.shared.openURL(NSURL(string: "http://scomiller.com/game")! as URL)
+    }
+    
+    func profileBackToMenuButtonClicked(){
+        musicText.isHidden = true
+        musicSwitch.isHidden = true
+        vibrationSwitch.isHidden = true
+        vibrationText.isHidden = true
+        menuLabel.isHidden = false
+        menuPlay.isHidden = false
+        menuProfile.isHidden = false
+        menuHelp.isHidden = false
+        profileBackToMenu.isHidden = true
+        
     }
     func postGamePlayButtonClicked() {
         print("Post game play button clicked")
@@ -542,7 +679,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         postGameView.isHidden = true
         postGamePlayButton.isHidden = true
         menuLabel.isHidden = true
-        //scoreLabel.isHidden = true //unness?
         menuHelp.isHidden = true
         
         //seemed to have fixed the bug with the label lingering
@@ -550,18 +686,33 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         allMatchesLabel.isHidden = true
         
         preGame()
-        //setupGame()
     }
     
-    //Step through circle array and match tint colors to match tags
-
-    /*func setTags() {
-        var tagCount = 0
-        for x in myBlocks {
-            x.tag = tagCount
-            tagCount += 1
+    @IBAction func vibrationSwitchValueDidChange(sender: AnyObject) {
+        var vibrationDefaults = UserDefaults.standard
+        
+        if vibrationSwitch.isOn {
+            vibrationDefaults.set(true, forKey: "VibrationSwitchState")
+            allowVibrations = true
+        } else {
+            vibrationDefaults.set(false, forKey: "VibrationSwitchState")
+            allowVibrations = false
         }
-    }*/ //unnessecary with new setup?
+    }
+    
+    @IBAction func musicSwitchValueDidChange(sender: AnyObject) {
+        var musicDefaults = UserDefaults.standard
+        
+        if musicSwitch.isOn {
+            musicDefaults.set(true, forKey: "MusicSwitchState")
+            allowMusic = true
+        } else {
+            musicDefaults.set(false, forKey: "MusicSwitchState")
+            allowMusic = false
+            player?.stop()
+        }
+    }
+    
     
     override func viewDidLoad() {
         preGame()
@@ -622,11 +773,13 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 myBlocks[objectDragging].isHidden = true
                 myCircles[circleLocation].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                 
+                if vibrationSwitch.isOn {
+                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+                }
                 matchCounter += 1
                 
                 if matchCounter == 16{
                 allMatches = true
-                //scoreLabel.isHidden = false
                 allMatchesLabel.isHidden = false
                 postGame()
                 }
@@ -672,6 +825,21 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    func playGameMusic() {
+        let url = Bundle.main.url(forResource: "lilly", withExtension: "mp3")!
+        
+        do {
+            player = try AVAudioPlayer(contentsOf: url)
+            guard let player = player else { return }
+            player.volume = 0.3
+            
+            player.prepareToPlay()
+            player.play()
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 
 
