@@ -17,6 +17,11 @@
 		5F303B791E628E7C00440F58 /* lilly.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F303B781E628E7C00440F58 /* lilly.mp3 */; };
 		5F53FE331E5EA62300BE617B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F53FE321E5EA62300BE617B /* Assets.xcassets */; };
 		5F8474B41E43F82300FADFBA /* Lombok.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8474B31E43F58700FADFBA /* Lombok.otf */; };
+		5F99DE191E63BC1300175665 /* launchTime.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F99DE181E63BC1300175665 /* launchTime.mp3 */; };
+		5F99DE1B1E63C7E100175665 /* brokenPlaces.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F99DE1A1E63C7E100175665 /* brokenPlaces.mp3 */; };
+		5F99DE201E63F53C00175665 /* match1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F99DE1D1E63F53C00175665 /* match1.mp3 */; };
+		5F99DE211E63F53C00175665 /* match2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F99DE1E1E63F53C00175665 /* match2.mp3 */; };
+		5F99DE221E63F53C00175665 /* match3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F99DE1F1E63F53C00175665 /* match3.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +58,11 @@
 		5F303B781E628E7C00440F58 /* lilly.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = lilly.mp3; sourceTree = "<group>"; };
 		5F53FE321E5EA62300BE617B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F8474B31E43F58700FADFBA /* Lombok.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Lombok.otf; sourceTree = "<group>"; };
+		5F99DE181E63BC1300175665 /* launchTime.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = launchTime.mp3; sourceTree = "<group>"; };
+		5F99DE1A1E63C7E100175665 /* brokenPlaces.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = brokenPlaces.mp3; sourceTree = "<group>"; };
+		5F99DE1D1E63F53C00175665 /* match1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = match1.mp3; sourceTree = "<group>"; };
+		5F99DE1E1E63F53C00175665 /* match2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = match2.mp3; sourceTree = "<group>"; };
+		5F99DE1F1E63F53C00175665 /* match3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = match3.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +97,8 @@
 				5F1130DD1DB81CD20012B007 /* blocks1Tests */,
 				5F1130E81DB81CD30012B007 /* blocks1UITests */,
 				5F1130C71DB81CD20012B007 /* Products */,
-				5F303B781E628E7C00440F58 /* lilly.mp3 */,
+				5F99DE231E63F54500175665 /* Sounds */,
+				5F99DE1C1E63F52300175665 /* Music */,
 			);
 			sourceTree = "<group>";
 		};
@@ -140,6 +151,26 @@
 				5F8474B31E43F58700FADFBA /* Lombok.otf */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		5F99DE1C1E63F52300175665 /* Music */ = {
+			isa = PBXGroup;
+			children = (
+				5F303B781E628E7C00440F58 /* lilly.mp3 */,
+				5F99DE1A1E63C7E100175665 /* brokenPlaces.mp3 */,
+				5F99DE181E63BC1300175665 /* launchTime.mp3 */,
+			);
+			name = Music;
+			sourceTree = "<group>";
+		};
+		5F99DE231E63F54500175665 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				5F99DE1D1E63F53C00175665 /* match1.mp3 */,
+				5F99DE1E1E63F53C00175665 /* match2.mp3 */,
+				5F99DE1F1E63F53C00175665 /* match3.mp3 */,
+			);
+			name = Sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -252,7 +283,12 @@
 			files = (
 				5F8474B41E43F82300FADFBA /* Lombok.otf in Resources */,
 				5F1130D41DB81CD20012B007 /* LaunchScreen.storyboard in Resources */,
+				5F99DE1B1E63C7E100175665 /* brokenPlaces.mp3 in Resources */,
 				5F53FE331E5EA62300BE617B /* Assets.xcassets in Resources */,
+				5F99DE191E63BC1300175665 /* launchTime.mp3 in Resources */,
+				5F99DE201E63F53C00175665 /* match1.mp3 in Resources */,
+				5F99DE211E63F53C00175665 /* match2.mp3 in Resources */,
+				5F99DE221E63F53C00175665 /* match3.mp3 in Resources */,
 				5F303B791E628E7C00440F58 /* lilly.mp3 in Resources */,
 				5F1130CF1DB81CD20012B007 /* Main.storyboard in Resources */,
 			);

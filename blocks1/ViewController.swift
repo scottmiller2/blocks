@@ -8,6 +8,9 @@
 
 //Notes
 
+//Feb 26
+//Snap to grid & reject move are conflicting
+
 //Feb 25
 //Added new code in "new code" tags. Also added a "validMatch" variable to my match check statement
 
@@ -88,6 +91,11 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var initPosy = 0
     var validMove = false
     
+    var movingUp = false
+    var movingLeft = false
+    var movingRight = false
+    var movingDown = false
+    
     //match checking
     var pos1 = CGPoint (x: 0.0, y: 0.0)
     var pos2 = CGPoint (x: 0.0, y: 0.0)
@@ -123,7 +131,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PreBG.jpg")!)
         
         //Build the menu box
-        menuView = UIView(frame: CGRect(x: 0, y: 0, width: 270, height: 330))
+        menuView = UIView(frame: CGRect(x: 0, y: 0, width: 270, height: 385))
         menuView.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
         self.view.addSubview(menuView)
         menuView.layer.zPosition = 1;
@@ -159,11 +167,11 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         menuLabel.center = self.view.center
         menuLabel.center.x = self.view.center.x
-        menuLabel.center.y = self.view.center.y - 55
+        menuLabel.center.y = self.view.center.y - 75
         
         //Menu play button
         menuPlay = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
-        menuPlay.backgroundColor = UIColor(red: 0.3, green: 0.7, blue: 0.9, alpha: 0.9)
+        menuPlay.backgroundColor = UIColor(red: 0.1, green: 0.4, blue: 0.8, alpha: 0.9)
         //menuPlay.titleLabel?.font = UIFont.init(name: "Helvetica", size:30)
         menuPlay.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
         menuPlay.setTitle("PLAY", for: .normal)
@@ -192,7 +200,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         //Menu help button
         menuHelp = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
-        menuHelp.backgroundColor = UIColor(red: 0.1, green: 0.4, blue: 0.8, alpha: 0.9)
+        menuHelp.backgroundColor = UIColor(red: 0.3, green: 0.7, blue: 0.9, alpha: 0.9)
         menuHelp.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
         menuHelp.setTitle("HELP", for: .normal)
         menuHelp.addTarget(self, action:#selector(self.menuHelpButtonClicked), for: .touchUpInside)
@@ -228,7 +236,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         vibrationText.layer.zPosition = 1
         vibrationText.center = self.view.center
         vibrationText.center.x = self.view.center.x - 35
-        vibrationText.center.y = self.view.center.y - 80
+        vibrationText.center.y = self.view.center.y - 111
         
         //Vibration switch
         vibrationSwitch = UISwitch(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
@@ -240,7 +248,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         vibrationSwitch.center = self.view.center
         vibrationSwitch.center.x = self.view.center.x + 45
-        vibrationSwitch.center.y = self.view.center.y - 80
+        vibrationSwitch.center.y = self.view.center.y - 110
         
         //Music text
         musicText = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
@@ -251,8 +259,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         musicText.layer.zPosition = 1
         
         musicText.center = self.view.center
-        musicText.center.x = self.view.center.x - 15
-        musicText.center.y = self.view.center.y - 125
+        musicText.center.x = self.view.center.x - 17
+        musicText.center.y = self.view.center.y - 156
         
         //Music switch
         musicSwitch = UISwitch(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
@@ -264,11 +272,11 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         musicSwitch.center = self.view.center
         musicSwitch.center.x = self.view.center.x + 45
-        musicSwitch.center.y = self.view.center.y - 125
+        musicSwitch.center.y = self.view.center.y - 155
         
         //Menu help button
         profileBackToMenu = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
-        profileBackToMenu.backgroundColor = UIColor(red: 0.3, green: 0.7, blue: 0.9, alpha: 0.9)
+        profileBackToMenu.backgroundColor = UIColor(red: 0.1, green: 0.3, blue: 0.8, alpha: 0.6)
         profileBackToMenu.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
         profileBackToMenu.setTitle("MENU", for: .normal)
         profileBackToMenu.addTarget(self, action:#selector(self.profileBackToMenuButtonClicked), for: .touchUpInside)
@@ -310,7 +318,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         initPosx = 0
         initPosy = 0
         
-        score = moveCounter - seconds
+        score = (Int(Double(seconds) * (Double(matchCounter * 1)) + (Double(matchCounter) * ((Double(moveCounter)) * 0.1))))
 
         
         //Set view background
@@ -322,7 +330,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         timer.invalidate()
         
         //Build the menu box
-        postGameView = UIView(frame: CGRect(x: 0, y: 0, width: 270, height: 270))
+        postGameView = UIView(frame: CGRect(x: 0, y: 0, width: 270, height: 320))
         postGameView.backgroundColor = UIColor(patternImage: UIImage(named: "background.png")!)
         self.view.addSubview(postGameView)
         postGameView.layer.zPosition = 1;
@@ -339,7 +347,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         postGameView.center.x = self.view.center.x
         postGameView.center.y = self.view.center.y
         
-        //Blocks title
+        /*Blocks title
         menuLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 55))
         menuLabel.font = UIFont(name: "Lombok", size: 48)
         menuLabel.center = CGPoint(x: 160, y: 285)
@@ -357,21 +365,26 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         menuLabel.center = self.view.center
         menuLabel.center.x = self.view.center.x
-        menuLabel.center.y = self.view.center.y - 80
+        menuLabel.center.y = self.view.center.y - 75*/
         
         if allMatches == true {
             allMatchesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
-            allMatchesLabel.font = UIFont(name: "Helvetica", size: 22.0)
+            allMatchesLabel.font = UIFont(name: "Helvetica", size: 30.0)
             allMatchesLabel.center = CGPoint(x: 160, y: 285)
             allMatchesLabel.textAlignment = .center
-            allMatchesLabel.text = "You matched them all!"
+            allMatchesLabel.text = "You got them!"
             allMatchesLabel.layer.zPosition = 1;
             allMatchesLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
             self.view.addSubview(allMatchesLabel)
             
+            allMatchesLabel.layer.shadowColor = UIColor.black.cgColor
+            allMatchesLabel.layer.shadowOpacity = 0.5
+            allMatchesLabel.layer.shadowOffset = CGSize.zero
+            allMatchesLabel.layer.shadowRadius = 3
+            
             allMatchesLabel.center = self.view.center
             allMatchesLabel.center.x = self.view.center.x
-            allMatchesLabel.center.y = self.view.center.y - 22
+            allMatchesLabel.center.y = self.view.center.y - 100
             allMatches = false
             allMatchesLabel.isHidden = false
         }
@@ -379,17 +392,22 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         //Out of time / All matches made
         else if outOfTime == true {
         outOfTimeLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
-        outOfTimeLabel.font = UIFont(name: "Helvetica", size: 22.0)
+        outOfTimeLabel.font = UIFont(name: "Helvetica", size: 30.0)
         outOfTimeLabel.center = CGPoint(x: 160, y: 285)
         outOfTimeLabel.textAlignment = .center
-        outOfTimeLabel.text = "You ran out of time"
+        outOfTimeLabel.text = "Out of time"
         outOfTimeLabel.layer.zPosition = 1;
         outOfTimeLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         self.view.addSubview(outOfTimeLabel)
+            
+            outOfTimeLabel.layer.shadowColor = UIColor.black.cgColor
+            outOfTimeLabel.layer.shadowOpacity = 0.5
+            outOfTimeLabel.layer.shadowOffset = CGSize.zero
+            outOfTimeLabel.layer.shadowRadius = 3
         
         outOfTimeLabel.center = self.view.center
         outOfTimeLabel.center.x = self.view.center.x
-        outOfTimeLabel.center.y = self.view.center.y - 22
+        outOfTimeLabel.center.y = self.view.center.y - 100
         outOfTime = false
         outOfTimeLabel.isHidden = false
         }
@@ -401,13 +419,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsTimeLabel.textAlignment = .center
         statsTimeLabel.text = "Time left: \(seconds)"
         statsTimeLabel.layer.zPosition = 1;
-        statsTimeLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)
+        statsTimeLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         self.view.addSubview(statsTimeLabel)
         
         statsTimeLabel.center = self.view.center
-        statsTimeLabel.center.x = self.view.center.x - 60
-        statsTimeLabel.center.y = self.view.center.y + 27
+        statsTimeLabel.center.x = self.view.center.x //- 65
+        statsTimeLabel.center.y = self.view.center.y - 35
         statsTimeLabel.isHidden = false
+        
         
         //Stats (Matches)
         statsMatchesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
@@ -415,14 +434,15 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsMatchesLabel.center = CGPoint(x: 160, y: 285)
         statsMatchesLabel.textAlignment = .center
         statsMatchesLabel.text = "Matches: \(matchCounter)"
-        statsMatchesLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)
+        statsMatchesLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         statsMatchesLabel.layer.zPosition = 1;
         self.view.addSubview(statsMatchesLabel)
         
         statsMatchesLabel.center = self.view.center
-        statsMatchesLabel.center.x = self.view.center.x - 60
-        statsMatchesLabel.center.y = self.view.center.y + 57
+        statsMatchesLabel.center.x = self.view.center.x //- 65
+        statsMatchesLabel.center.y = self.view.center.y - 10
         statsMatchesLabel.isHidden = false
+        
         
         //Stats (Moves)
         statsMovesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
@@ -431,27 +451,33 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsMovesLabel.textAlignment = .center
         statsMovesLabel.text = "Moves: \(moveCounter)"
         statsMovesLabel.layer.zPosition = 1;
-        statsMovesLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)
+        statsMovesLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         self.view.addSubview(statsMovesLabel)
         
         statsMovesLabel.center = self.view.center
-        statsMovesLabel.center.x = self.view.center.x + 60
-        statsMovesLabel.center.y = self.view.center.y + 27
+        statsMovesLabel.center.x = self.view.center.x //+ 65
+        statsMovesLabel.center.y = self.view.center.y + 15
         statsMovesLabel.isHidden = false
+        
         
         //Stats (Score)
         statsScoreLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
-        statsScoreLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        statsScoreLabel.font = UIFont(name: "Helvetica", size: 30.0)
         statsScoreLabel.center = CGPoint(x: 160, y: 285)
         statsScoreLabel.textAlignment = .center
         statsScoreLabel.text = "Score: \(score)"
         statsScoreLabel.layer.zPosition = 1;
-        statsScoreLabel.textColor = UIColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)
+        statsScoreLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         self.view.addSubview(statsScoreLabel)
         
+            statsScoreLabel.layer.shadowColor = UIColor.black.cgColor
+            statsScoreLabel.layer.shadowOpacity = 0.6
+            statsScoreLabel.layer.shadowOffset = CGSize.zero
+            statsScoreLabel.layer.shadowRadius = 5
+        
         statsScoreLabel.center = self.view.center
-        statsScoreLabel.center.x = self.view.center.x + 60
-        statsScoreLabel.center.y = self.view.center.y + 57
+        statsScoreLabel.center.x = self.view.center.x //+ 60
+        statsScoreLabel.center.y = self.view.center.y + 70
         statsScoreLabel.isHidden = false
         
         
@@ -466,7 +492,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         postGamePlayButton.center = self.view.center
         postGamePlayButton.center.x = self.view.center.x
-        postGamePlayButton.center.y = self.view.center.y + 105
+        postGamePlayButton.center.y = self.view.center.y + 133
         
 
         
@@ -689,7 +715,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     }
     
     @IBAction func vibrationSwitchValueDidChange(sender: AnyObject) {
-        var vibrationDefaults = UserDefaults.standard
+        let vibrationDefaults = UserDefaults.standard
         
         if vibrationSwitch.isOn {
             vibrationDefaults.set(true, forKey: "VibrationSwitchState")
@@ -701,7 +727,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     }
     
     @IBAction func musicSwitchValueDidChange(sender: AnyObject) {
-        var musicDefaults = UserDefaults.standard
+        let musicDefaults = UserDefaults.standard
         
         if musicSwitch.isOn {
             musicDefaults.set(true, forKey: "MusicSwitchState")
@@ -741,17 +767,65 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             
             initPosx = Int(recognizer.view!.center.x)
             initPosy = Int(recognizer.view!.center.y)
+
             
-            print("Recognizer.view")
-            print(recognizer.view!)
-            print("")
-            print("Pos2")
-            print(pos2)
-            print("")
+            let velocity = recognizer.velocity(in: self.view)
+            print(velocity)
             
+            movingUp = false
+            movingLeft = false
+            movingRight = false
+            movingDown = false
+            
+            if velocity.x > 75 {
+                movingRight = true
+                myBlocks[objectDragging].center.y = CGFloat(initPosy)
+            }
+            else if velocity.x < -75 {
+                movingLeft = true
+                myBlocks[objectDragging].center.y = CGFloat(initPosy)
+            }
+            else if velocity.y < -30 {
+                movingUp = true
+                myBlocks[objectDragging].center.x = CGFloat(initPosx)
+            }
+            else {
+                movingDown = true
+                myBlocks[objectDragging].center.x = CGFloat(initPosx)
+            }
+
+            
+        //New Code
+        case .changed:
+            
+            
+            if (movingRight == true) || (movingLeft == true)  {
+                myBlocks[objectDragging].center.y = CGFloat(initPosy)
+            }
+            else if (movingDown == true) || (movingUp == true) {
+                myBlocks[objectDragging].center.x = CGFloat(initPosx)
+            }
+
         case .ended:
-            /* New Code */
             
+            movingUp = false
+            movingLeft = false
+            movingRight = false
+            movingDown = false
+    
+            //Check to see if the move took place inside the bounds of the screen
+            if (myBlocks[objectDragging].center.x <= 40 || myBlocks[objectDragging].center.x >= 360) {
+                print("bounds clip")
+                myBlocks[objectDragging].center.x = CGFloat(initPosx)
+                myBlocks[objectDragging].center.y = CGFloat(initPosy)
+            }
+            else if (myBlocks[objectDragging].center.y <= 65 || myBlocks[objectDragging].center.y >= 720) {
+                print("bounds clip")
+                myBlocks[objectDragging].center.x = CGFloat(initPosx)
+                myBlocks[objectDragging].center.y = CGFloat(initPosy)
+            }
+            
+            //Check if block is in movement space
             for x in myBlocks {
             if (100 / 2 > sqrt((pos1.x - x.center.x) * (pos1.x - x.center.x) + (pos1.y - x.center.y) * (pos1.y - x.center.y))) {
                 if ((x.tag != objectDragging) && (x.isHidden != true)) {
@@ -766,8 +840,19 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 }
             }
             
-            /* End New Code */
+            //Set the block uniformly in the circle container
+            for y in myCircles {
+                if ((100 / 2 > sqrt((pos1.x - y.center.x) * (pos1.x - y.center.x) + (pos1.y - y.center.y) * (pos1.y - y.center.y))) && (validMove == true)){
+                    myBlocks[objectDragging].center.x = y.center.x
+                    myBlocks[objectDragging].center.y = y.center.y
+                    if (CGFloat(initPosx) == myBlocks[objectDragging].center.x) && (CGFloat(initPosy) == myBlocks[objectDragging].center.y){
+                        moveCounter -= 1
+                        gameTopCounter.text = "\(moveCounter)"
+                    }
+                }
+            }
             
+            //Check match
             if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)) && (myBlocks[objectDragging].tintColor == myCircles[circleLocation].tintColor) && (validMove == true))) {
                 
                 myBlocks[objectDragging].isHidden = true
@@ -828,19 +913,33 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     }
     
     func playGameMusic() {
-        let url = Bundle.main.url(forResource: "lilly", withExtension: "mp3")!
+        let diceRoll = Int(arc4random_uniform(3) + 1)
+        var song = "null"
+        
+        switch diceRoll {
+        case 1:
+            song = "lilly"
+        case 2:
+            song = "launchTime"
+        case 3:
+            song = "brokenPlaces"
+        default:
+            break
+        }
+        
+        let url = Bundle.main.url(forResource: (song), withExtension: "mp3")!
         
         do {
             player = try AVAudioPlayer(contentsOf: url)
             guard let player = player else { return }
-            player.volume = 0.3
+            player.volume = 0.2
             
             player.prepareToPlay()
             player.play()
         } catch let error {
             print(error.localizedDescription)
         }
+        print(diceRoll)
+        print(song)
     }
-
-
 }
