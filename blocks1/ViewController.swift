@@ -347,26 +347,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         postGameView.center.x = self.view.center.x
         postGameView.center.y = self.view.center.y
         
-        /*Blocks title
-        menuLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 55))
-        menuLabel.font = UIFont(name: "Lombok", size: 48)
-        menuLabel.center = CGPoint(x: 160, y: 285)
-        menuLabel.textAlignment = .center
-        menuLabel.text = "Blocks"
-        menuLabel.layer.zPosition = 1;
-        menuLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
-        self.view.addSubview(menuLabel)
-        
-        //Blocks title shadow
-        menuLabel.layer.shadowColor = UIColor.black.cgColor
-        menuLabel.layer.shadowOpacity = 0.7
-        menuLabel.layer.shadowOffset = CGSize.zero
-        menuLabel.layer.shadowRadius = 4
-        
-        menuLabel.center = self.view.center
-        menuLabel.center.x = self.view.center.x
-        menuLabel.center.y = self.view.center.y - 75*/
-        
         if allMatches == true {
             allMatchesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 65))
             allMatchesLabel.font = UIFont(name: "Helvetica", size: 30.0)
@@ -514,7 +494,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         arrayCounter = 0
         matchCounter = 0
         moveCounter = 0
-        seconds = 30
+        seconds = 60
         
         gameTopCounter.isHidden = false
         outOfTimeLabel.isHidden = true
@@ -637,8 +617,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         myBlocks[8].isHidden = true
         myBlocks[9].isHidden = true
         
-        //Call to set the tags for the circles and blocks on the screen
-        //setTags()
+        //Reset initial free spaces to lay underneath the moving blocks at all time
+        myCircles[8].layer.zPosition = 0;
+        myCircles[9].layer.zPosition = 0;
         
         //******* Debugging ********//
         //Print out the index and tags, as well as tintColors
@@ -767,7 +748,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             
             initPosx = Int(recognizer.view!.center.x)
             initPosy = Int(recognizer.view!.center.y)
-
             
             let velocity = recognizer.velocity(in: self.view)
             print(velocity)
@@ -825,7 +805,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 myBlocks[objectDragging].center.y = CGFloat(initPosy)
             }
             
-            //Check if block is in movement space
+            //Check to see if a block is in the space we are trying to go to
             for x in myBlocks {
             if (100 / 2 > sqrt((pos1.x - x.center.x) * (pos1.x - x.center.x) + (pos1.y - x.center.y) * (pos1.y - x.center.y))) {
                 if ((x.tag != objectDragging) && (x.isHidden != true)) {
