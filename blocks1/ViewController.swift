@@ -54,6 +54,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var allMatchesLabel = UILabel()
     var profileBackToMenu = UIButton()
     
+    var highScore = Int()
+    var highScoreLabel = UILabel()
+    var scoreIsHigher = false
+    
     var vibrationSwitch = UISwitch()
     var musicSwitch = UISwitch()
     
@@ -108,6 +112,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     /** Menu **/
     
     func preGame() {
+        
+        print("\(highScore) pregame") //debug pregame
         
          for x in myCircles {
          x.removeFromSuperview()
@@ -250,6 +256,16 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         vibrationSwitch.center.x = self.view.center.x + 45
         vibrationSwitch.center.y = self.view.center.y - 110
         
+        //High score in profile
+        highScoreLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        highScoreLabel.font = UIFont(name: "Helvetica", size: 23.0)
+        highScoreLabel.text = ("High Score \(highScore)")
+        highScoreLabel.center = self.view.center
+        highScoreLabel.center.x = self.view.center.x //+ 60
+        highScoreLabel.center.y = self.view.center.y + 85
+        self.view!.addSubview(highScoreLabel)
+        highScoreLabel.isHidden = true
+        
         //Music text
         musicText = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
         musicText.font = UIFont(name: "Helvetica", size: 20)
@@ -274,7 +290,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         musicSwitch.center.x = self.view.center.x + 45
         musicSwitch.center.y = self.view.center.y - 155
         
-        //Menu help button
+        //Profile menu button
         profileBackToMenu = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
         profileBackToMenu.backgroundColor = UIColor(red: 0.1, green: 0.3, blue: 0.8, alpha: 0.6)
         profileBackToMenu.titleLabel!.font =  UIFont(name: "Helvetica", size: 40)
@@ -283,14 +299,39 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         self.view.addSubview(profileBackToMenu)
         profileBackToMenu.layer.zPosition = 1;
         
-        
         profileBackToMenu.center = self.view.center
         profileBackToMenu.center.x = self.view.center.x
         profileBackToMenu.center.y = self.view.center.y + 165
         
+        //Stats (HighScore)
+        highScoreLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        highScoreLabel.font = UIFont(name: "Helvetica", size: 23.0)
+        highScoreLabel.center = CGPoint(x: 160, y: 285)
+        highScoreLabel.textAlignment = .center
+        if scoreIsHigher == true {
+            highScoreLabel.text = "High Score \(score)"
+        }
+        else{
+            highScoreLabel.text = "High Score \(highScore)"
+        }
+        highScoreLabel.textColor = UIColor(red: 0.2, green: 0.6, blue: 0.9, alpha: 1.0)
+        self.view.addSubview(highScoreLabel)
+        highScoreLabel.layer.zPosition = 1
+        
+        highScoreLabel.layer.shadowColor = UIColor.black.cgColor
+        highScoreLabel.layer.shadowOpacity = 0.2
+        highScoreLabel.layer.shadowOffset = CGSize.zero
+        highScoreLabel.layer.shadowRadius = 2
+        
+        highScoreLabel.center = self.view.center
+        highScoreLabel.center.x = self.view.center.x //+ 60
+        highScoreLabel.center.y = self.view.center.y + 85
+        highScoreLabel.isHidden = false
+        
         musicText.isHidden = true
         musicSwitch.isHidden = true
         vibrationText.isHidden = true
+        highScoreLabel.isHidden = true
         vibrationSwitch.isHidden = true
         profileBackToMenu.isHidden = true
         
@@ -319,7 +360,16 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         initPosy = 0
         
         score = (Int(Double(seconds) * (Double(matchCounter * 1)) + (Double(matchCounter) * ((Double(moveCounter)) * 0.1))))
-
+        
+        print("score: \(score)")
+        
+        if score > highScore {
+            saveHighScore()
+            scoreIsHigher = true
+        }
+        
+        print(scoreIsHigher)
+        print("\(highScore) pregame after saveHighScore called") //debug postGame after saveHighScore called
         
         //Set view background
         //self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PostBG.jpg")!)
@@ -364,7 +414,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             
             allMatchesLabel.center = self.view.center
             allMatchesLabel.center.x = self.view.center.x
-            allMatchesLabel.center.y = self.view.center.y - 100
+            allMatchesLabel.center.y = self.view.center.y - 125
             allMatches = false
             allMatchesLabel.isHidden = false
         }
@@ -387,7 +437,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         outOfTimeLabel.center = self.view.center
         outOfTimeLabel.center.x = self.view.center.x
-        outOfTimeLabel.center.y = self.view.center.y - 100
+        outOfTimeLabel.center.y = self.view.center.y - 125
         outOfTime = false
         outOfTimeLabel.isHidden = false
         }
@@ -397,14 +447,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsTimeLabel.font = UIFont(name: "Helvetica", size: 20.0)
         statsTimeLabel.center = CGPoint(x: 160, y: 285)
         statsTimeLabel.textAlignment = .center
-        statsTimeLabel.text = "Time left: \(seconds)"
+        statsTimeLabel.text = "\(seconds) seconds left"
         statsTimeLabel.layer.zPosition = 1;
         statsTimeLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         self.view.addSubview(statsTimeLabel)
         
         statsTimeLabel.center = self.view.center
         statsTimeLabel.center.x = self.view.center.x //- 65
-        statsTimeLabel.center.y = self.view.center.y - 35
+        statsTimeLabel.center.y = self.view.center.y - 60
         statsTimeLabel.isHidden = false
         
         
@@ -413,14 +463,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsMatchesLabel.font = UIFont(name: "Helvetica", size: 20.0)
         statsMatchesLabel.center = CGPoint(x: 160, y: 285)
         statsMatchesLabel.textAlignment = .center
-        statsMatchesLabel.text = "Matches: \(matchCounter)"
+        statsMatchesLabel.text = "\(matchCounter) matches"
         statsMatchesLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         statsMatchesLabel.layer.zPosition = 1;
         self.view.addSubview(statsMatchesLabel)
         
         statsMatchesLabel.center = self.view.center
         statsMatchesLabel.center.x = self.view.center.x //- 65
-        statsMatchesLabel.center.y = self.view.center.y - 10
+        statsMatchesLabel.center.y = self.view.center.y - 35
         statsMatchesLabel.isHidden = false
         
         
@@ -429,14 +479,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsMovesLabel.font = UIFont(name: "Helvetica", size: 20.0)
         statsMovesLabel.center = CGPoint(x: 160, y: 285)
         statsMovesLabel.textAlignment = .center
-        statsMovesLabel.text = "Moves: \(moveCounter)"
+        statsMovesLabel.text = "\(moveCounter) moves"
         statsMovesLabel.layer.zPosition = 1;
         statsMovesLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         self.view.addSubview(statsMovesLabel)
         
         statsMovesLabel.center = self.view.center
         statsMovesLabel.center.x = self.view.center.x //+ 65
-        statsMovesLabel.center.y = self.view.center.y + 15
+        statsMovesLabel.center.y = self.view.center.y - 10
         statsMovesLabel.isHidden = false
         
         
@@ -445,21 +495,31 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsScoreLabel.font = UIFont(name: "Helvetica", size: 30.0)
         statsScoreLabel.center = CGPoint(x: 160, y: 285)
         statsScoreLabel.textAlignment = .center
-        statsScoreLabel.text = "Score: \(score)"
+        statsScoreLabel.text = "Score \(score)"
         statsScoreLabel.layer.zPosition = 1;
-        statsScoreLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        statsScoreLabel.textColor = UIColor(red: 0.3, green: 0.3, blue: 0.6, alpha: 1.0)
         self.view.addSubview(statsScoreLabel)
         
             statsScoreLabel.layer.shadowColor = UIColor.black.cgColor
-            statsScoreLabel.layer.shadowOpacity = 0.6
+            statsScoreLabel.layer.shadowOpacity = 0.2
             statsScoreLabel.layer.shadowOffset = CGSize.zero
-            statsScoreLabel.layer.shadowRadius = 5
+            statsScoreLabel.layer.shadowRadius = 2
         
         statsScoreLabel.center = self.view.center
         statsScoreLabel.center.x = self.view.center.x //+ 60
-        statsScoreLabel.center.y = self.view.center.y + 70
+        statsScoreLabel.center.y = self.view.center.y + 55
         statsScoreLabel.isHidden = false
         
+        //display high score ..
+        highScoreLabel.text = ("High Score \(highScore)")
+        
+        //marchAdd
+        highScoreLabel.font = UIFont(name: "Helvetica", size: 23.0)
+        highScoreLabel.center.y = self.view.center.y + 86
+        //marchAdd
+        
+        highScoreLabel.isHidden = false
+        highScoreLabel.layer.zPosition = 3
         
         //Post game play button
         postGamePlayButton = UIButton(frame: CGRect(x: 25, y: 25, width: 270, height: 55))
@@ -494,7 +554,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         arrayCounter = 0
         matchCounter = 0
         moveCounter = 0
-        seconds = 60
+        seconds = 20
+        scoreIsHigher = false
         
         gameTopCounter.isHidden = false
         outOfTimeLabel.isHidden = true
@@ -503,6 +564,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         vibrationSwitch.isHidden = true
         profileBackToMenu.isHidden = true
         menuProfile.isHidden = true
+        highScoreLabel.isHidden = true
         
         
         //Timer label
@@ -622,21 +684,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         myCircles[9].layer.zPosition = 0;
         
         //******* Debugging ********//
-        //Print out the index and tags, as well as tintColors
-        for y in 0...17{
-            print("index \(y)")
-            print("BLOCK tag \(myBlocks[y].tag)")
-            print("block color \(myBlocks[y].tintColor)")
-            print("block center.x \(myBlocks[y].center.x)")
-            print("block center.y \(myBlocks[y].center.y)")
-            print("CIRCLE tag \(myCircles[y].tag)")
-            print("circle color \(myCircles[y].tintColor)")
-            print("")
-        }
-        
-        /* Check here for initial game load matches? */
         
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(ViewController.subtractTime), userInfo: nil, repeats: true)
+        
+        print("\(highScore) setupGame") //debug setupGame
     }
 
     
@@ -652,16 +703,20 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     }
     func menuProfileButtonClicked() {
         print("Play Button Clicked")
-        menuProfile.isHidden = true
-        vibrationSwitch.isHidden = false
-        vibrationText.isHidden = false
-        musicSwitch.isHidden = false
-        musicText.isHidden = false
         menuPlay.isHidden = true
-        menuLabel.isHidden = true
         menuHelp.isHidden = true
+        menuLabel.isHidden = true
+        musicText.isHidden = false
+        menuProfile.isHidden = true
+        musicSwitch.isHidden = false
+        vibrationText.isHidden = false
+        highScoreLabel.isHidden = false
+        //marchAdd
+        highScoreLabel.font = UIFont(name: "Helvetica", size: 30.0)
+        highScoreLabel.center.y = self.view.center.y + 115
+        //marchAdd
+        vibrationSwitch.isHidden = false
         profileBackToMenu.isHidden = false
-
     }
     func menuHelpButtonClicked() {
         print("Help Button Clicked")
@@ -678,7 +733,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         menuProfile.isHidden = false
         menuHelp.isHidden = false
         profileBackToMenu.isHidden = true
-        
+        highScoreLabel.isHidden = true
     }
     func postGamePlayButtonClicked() {
         print("Post game play button clicked")
@@ -687,6 +742,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         postGamePlayButton.isHidden = true
         menuLabel.isHidden = true
         menuHelp.isHidden = true
+        highScoreLabel.isHidden = true
         
         //seemed to have fixed the bug with the label lingering
         outOfTimeLabel.isHidden = true
@@ -752,6 +808,8 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             let velocity = recognizer.velocity(in: self.view)
             print(velocity)
             
+            recognizer.view?.layer.zPosition = 2
+            
             movingUp = false
             movingLeft = false
             movingRight = false
@@ -792,7 +850,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             movingLeft = false
             movingRight = false
             movingDown = false
-    
+            
             //Check to see if the move took place inside the bounds of the screen
             if (myBlocks[objectDragging].center.x <= 40 || myBlocks[objectDragging].center.x >= 360) {
                 print("bounds clip")
@@ -846,6 +904,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 if matchCounter == 16{
                 allMatches = true
                 allMatchesLabel.isHidden = false
+                
                 postGame()
                 }
                 else if seconds == 0{
@@ -919,7 +978,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         } catch let error {
             print(error.localizedDescription)
         }
-        print(diceRoll)
-        print(song)
+    }
+    func saveHighScore() {
+        let highScoreData = UserDefaults.standard
+        highScore = score
+        highScoreData.setValue(highScore, forKey: "highScore")
     }
 }
