@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "ViewController.handlePan(UIPanGestureRecognizer) -&gt; ():ViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "recognizer.view?.tag">
+            </PersistentString>
+            <PersistentString
+               value = "myBlocks[0]">
+            </PersistentString>
+            <PersistentString
+               value = "objectDragging">
+            </PersistentString>
+            <PersistentString
+               value = "myBlocks">
+            </PersistentString>
+            <PersistentString
+               value = "myCircles[0].tag">
+            </PersistentString>
+            <PersistentString
+               value = "100 / 2 &gt; sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y))">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ViewController.viewDidLoad() -&gt; ():ViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "arrayCounter">
+            </PersistentString>
+            <PersistentString
+               value = "myCircles">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ViewController.saveHighScore() -&gt; ():ViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "score">
+            </PersistentString>
+            <PersistentString
+               value = "highScore">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
