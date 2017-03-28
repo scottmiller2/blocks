@@ -28,14 +28,27 @@ import GameKit
 import AVFoundation
 import AudioToolbox
 
+extension Double {
+    
+    public static var random: Double {
+        get {
+            return Double(arc4random()) / 0xFFFFFFFF
+        }
+    }
+    
+    public static func random(min: Double, max: Double) -> Double {
+        return Double.random * (max - min) + min
+    }
+}
+
 class ViewController: UIViewController, UICollectionViewDelegate {
 
     @IBOutlet weak var counterLabel: UILabel!
-    
-    var colorsRed: [Double] = [1.0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.9, /*8*/ 1.0, 1.0, 0.2, 0.6, 0.5, 0.8, 0.9, 0.6, 0.0, 0.9]
-    var colorsGreen: [Double] = [0.1, 0.8, 0.3, 0.6, 0.7, 0.4, 0.1, 0.3, /*8*/ 1.0, 1.0, 0.6, 1.0, 0.5, 0.3, 0.2, 0.9, 0.5, 0.8]
-    var colorsBlue: [Double] = [0.2, 0.3, 0.6, 0.9, 0.4, 0.5, 0.6, 0.5, /*8*/ 1.0, 1.0, 0.9, 0.1, 0.2, 0.3, 0.9, 0.4, 0.3, 0.2]
-    var colorsAlpha: [Double] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, /*8*/ 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
+    var colorsRed: [Double] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    var colorsGreen: [Double] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    var colorsBlue: [Double] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    var colorsAlpha: [Double] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     var orderArray: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
     
     //Block and Circle arrays
@@ -57,6 +70,13 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var highScore = Int()
     var highScoreLabel = UILabel()
     var scoreIsHigher = false
+    
+    var allTimeScoreLabel = UILabel()
+    var allTimeTimeLabel = UILabel()
+    var allTimeMovesLabel = UILabel()
+    var allTimeScore = Int()
+    var allTimeTime = Int()
+    var allTimeMoves = Int()
     
     var vibrationSwitch = UISwitch()
     var musicSwitch = UISwitch()
@@ -87,6 +107,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var seconds = 0
     var timer = Timer()
     var outOfTime = false
+    var forceEnd = false
     
     //movement variables
     var objectDragging = 0
@@ -94,11 +115,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var initPosx = 0
     var initPosy = 0
     var validMove = false
+    var snappedToSpot = false
     
-    var movingUp = false
-    var movingLeft = false
-    var movingRight = false
-    var movingDown = false
+    var movingVertical = false
+    var movingHorizontal = false
     
     //match checking
     var pos1 = CGPoint (x: 0.0, y: 0.0)
@@ -113,8 +133,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     
     func preGame() {
         
-        print("\(highScore) pregame") //debug pregame
-        
          for x in myCircles {
          x.removeFromSuperview()
          }
@@ -123,6 +141,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         arrayCounter = 0
         moveCounter = 0
         matchCounter = 0
+        forceEnd = false
         
         
         //Configure Labels
@@ -132,6 +151,24 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         statsTimeLabel.isHidden = true
         statsScoreLabel.isHidden = true
         
+        let highScoreData = UserDefaults.standard
+        if (highScoreData.object(forKey: "highScore") != nil) {
+            highScore = highScoreData.value(forKey: "highScore") as! NSInteger!
+        }
+        
+        let allTimeMovesData = UserDefaults.standard
+        if (allTimeMovesData.object(forKey: "allTimeMoves") != nil) {
+            allTimeMoves = allTimeMovesData.value(forKey: "allTimeMoves") as! NSInteger!
+        }
+        
+        let allTimeScoreData = UserDefaults.standard
+        if (allTimeScoreData.object(forKey: "allTimeScore") != nil) {
+            allTimeScore = allTimeScoreData.value(forKey: "allTimeScore") as! NSInteger!
+        }
+        let allTimeTimeData = UserDefaults.standard
+        if (allTimeTimeData.object(forKey: "allTimeTime") != nil) {
+            allTimeTime = allTimeTimeData.value(forKey: "allTimeTime") as! NSInteger!
+        }
         
         //Set view background
         self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PreBG.jpg")!)
@@ -233,6 +270,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         gameTopTitle.center.x = self.view.center.x
         gameTopTitle.center.y = self.view.center.y - 330
         
+        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.longTap))
+        gameTopTitle.addGestureRecognizer(longGesture)
+        gameTopTitle.isUserInteractionEnabled = true
+        
         //Vibration text
         vibrationText = UILabel(frame: CGRect(x: 25, y: 25, width: 200, height: 50))
         vibrationText.font = UIFont(name: "Helvetica", size: 20)
@@ -314,7 +355,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         else{
             highScoreLabel.text = "High Score \(highScore)"
         }
-        highScoreLabel.textColor = UIColor(red: 0.2, green: 0.6, blue: 0.9, alpha: 1.0)
+        highScoreLabel.textColor = UIColor(red: 0.2, green: 0.6, blue: 0.9, alpha: 0.5)
         self.view.addSubview(highScoreLabel)
         highScoreLabel.layer.zPosition = 1
         
@@ -328,12 +369,82 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         highScoreLabel.center.y = self.view.center.y + 85
         highScoreLabel.isHidden = false
         
+        let (h,m,s) = secondsToHoursMinutesSeconds(allTimeTime: allTimeTime)
+        
+        //Profile All-Time Stats
+        allTimeTimeLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        allTimeTimeLabel.font = UIFont(name: "Helvetica", size: 25.0)
+        allTimeTimeLabel.center = CGPoint(x: 160, y: 285)
+        allTimeTimeLabel.textAlignment = .center
+        if h > 0{
+        allTimeTimeLabel.text = "total time \(h)h" + " \(m)m" + " \(s)s"
+        }
+        else{
+        allTimeTimeLabel.text = "total time \(m)m" + " \(s)s"
+        }
+        allTimeTimeLabel.layer.zPosition = 1;
+        allTimeTimeLabel.textColor = UIColor(red: 0.3, green: 0.3, blue: 0.6, alpha: 1.0)
+        self.view.addSubview(allTimeTimeLabel)
+        
+        allTimeTimeLabel.layer.shadowColor = UIColor.black.cgColor
+        allTimeTimeLabel.layer.shadowOpacity = 0.2
+        allTimeTimeLabel.layer.shadowOffset = CGSize.zero
+        allTimeTimeLabel.layer.shadowRadius = 2
+        
+        allTimeTimeLabel.center = self.view.center
+        allTimeTimeLabel.center.x = self.view.center.x
+        allTimeTimeLabel.center.y = self.view.center.y - 30
+        allTimeTimeLabel.isHidden = false
+        
+        
+        allTimeScoreLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        allTimeScoreLabel.font = UIFont(name: "Helvetica", size: 25.0)
+        allTimeScoreLabel.center = CGPoint(x: 160, y: 285)
+        allTimeScoreLabel.textAlignment = .center
+        allTimeScoreLabel.text = "total score \(allTimeScore)"
+        allTimeScoreLabel.layer.zPosition = 1;
+        allTimeScoreLabel.textColor = UIColor(red: 0.3, green: 0.3, blue: 0.6, alpha: 1.0)
+        self.view.addSubview(allTimeScoreLabel)
+        
+        allTimeScoreLabel.layer.shadowColor = UIColor.black.cgColor
+        allTimeScoreLabel.layer.shadowOpacity = 0.2
+        allTimeScoreLabel.layer.shadowOffset = CGSize.zero
+        allTimeScoreLabel.layer.shadowRadius = 2
+        
+        allTimeScoreLabel.center = self.view.center
+        allTimeScoreLabel.center.x = self.view.center.x
+        allTimeScoreLabel.center.y = self.view.center.y
+        allTimeScoreLabel.isHidden = false
+        
+        //Profile All-Time Stats
+        allTimeMovesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+        allTimeMovesLabel.font = UIFont(name: "Helvetica", size: 25.0)
+        allTimeMovesLabel.center = CGPoint(x: 160, y: 285)
+        allTimeMovesLabel.textAlignment = .center
+        allTimeMovesLabel.text = "total moves \(allTimeMoves)"
+        allTimeMovesLabel.layer.zPosition = 1;
+        allTimeMovesLabel.textColor = UIColor(red: 0.3, green: 0.3, blue: 0.6, alpha: 1.0)
+        self.view.addSubview(allTimeMovesLabel)
+        
+        allTimeMovesLabel.layer.shadowColor = UIColor.black.cgColor
+        allTimeMovesLabel.layer.shadowOpacity = 0.2
+        allTimeMovesLabel.layer.shadowOffset = CGSize.zero
+        allTimeMovesLabel.layer.shadowRadius = 2
+        
+        allTimeMovesLabel.center = self.view.center
+        allTimeMovesLabel.center.x = self.view.center.x
+        allTimeMovesLabel.center.y = self.view.center.y + 30
+        allTimeMovesLabel.isHidden = false
+        
         musicText.isHidden = true
         musicSwitch.isHidden = true
         vibrationText.isHidden = true
         highScoreLabel.isHidden = true
         vibrationSwitch.isHidden = true
         profileBackToMenu.isHidden = true
+        allTimeMovesLabel.isHidden = true
+        allTimeScoreLabel.isHidden = true
+        allTimeTimeLabel.isHidden = true
         
         let musicDefaults = UserDefaults.standard
         let vibrationDefaults = UserDefaults.standard
@@ -344,12 +455,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         if (vibrationDefaults.object(forKey: "VibrationSwitchState") != nil) {
             vibrationSwitch.isOn = vibrationDefaults.bool(forKey: "VibrationSwitchState")
         }
-        
-        print("In preGame")
+
     }
 
     func postGame(){
-        print("In Post Game")
         timerLabel.removeFromSuperview()
         
         for x in myBlocks {
@@ -361,18 +470,27 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         score = (Int(Double(seconds) * (Double(matchCounter * 1)) + (Double(matchCounter) * ((Double(moveCounter)) * 0.1))))
         
-        print("score: \(score)")
+
         
         if score > highScore {
             saveHighScore()
             scoreIsHigher = true
         }
         
-        print(scoreIsHigher)
-        print("\(highScore) pregame after saveHighScore called") //debug postGame after saveHighScore called
+        if forceEnd == false{
+        allTimeScore = allTimeScore + score
+        allTimeMoves = allTimeMoves + moveCounter
+        allTimeTime = allTimeTime + (60 - seconds)
+        }
+        
+        let allTimeScoreData = UserDefaults.standard
+        allTimeScoreData.set(allTimeScore, forKey: "allTimeScore")
+        let allTimeMovesData = UserDefaults.standard
+        allTimeMovesData.set(allTimeMoves, forKey: "allTimeMoves")
+        let allTimeTimeData = UserDefaults.standard
+        allTimeTimeData.set(allTimeTime, forKey: "allTimeTime")
         
         //Set view background
-        //self.view.backgroundColor = UIColor(patternImage: UIImage(named: "PostBG.jpg")!)
         
         gameTopTitle.isHidden = true
         gameTopCounter.isHidden = false
@@ -444,7 +562,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         
         //Stats (Time)
         statsTimeLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
-        statsTimeLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        statsTimeLabel.font = UIFont(name: "Helvetica", size: 25.0)
         statsTimeLabel.center = CGPoint(x: 160, y: 285)
         statsTimeLabel.textAlignment = .center
         statsTimeLabel.text = "\(seconds) seconds left"
@@ -453,14 +571,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         self.view.addSubview(statsTimeLabel)
         
         statsTimeLabel.center = self.view.center
-        statsTimeLabel.center.x = self.view.center.x //- 65
-        statsTimeLabel.center.y = self.view.center.y - 60
+        statsTimeLabel.center.x = self.view.center.x //-60
+        statsTimeLabel.center.y = self.view.center.y - 21
         statsTimeLabel.isHidden = false
         
         
         //Stats (Matches)
         statsMatchesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
-        statsMatchesLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        statsMatchesLabel.font = UIFont(name: "Helvetica", size: 25.0)
         statsMatchesLabel.center = CGPoint(x: 160, y: 285)
         statsMatchesLabel.textAlignment = .center
         statsMatchesLabel.text = "\(matchCounter) matches"
@@ -469,14 +587,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         self.view.addSubview(statsMatchesLabel)
         
         statsMatchesLabel.center = self.view.center
-        statsMatchesLabel.center.x = self.view.center.x //- 65
-        statsMatchesLabel.center.y = self.view.center.y - 35
+        statsMatchesLabel.center.x = self.view.center.x //-35
+        statsMatchesLabel.center.y = self.view.center.y + 7
         statsMatchesLabel.isHidden = false
         
         
         //Stats (Moves)
         statsMovesLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
-        statsMovesLabel.font = UIFont(name: "Helvetica", size: 20.0)
+        statsMovesLabel.font = UIFont(name: "Helvetica", size: 25.0)
         statsMovesLabel.center = CGPoint(x: 160, y: 285)
         statsMovesLabel.textAlignment = .center
         statsMovesLabel.text = "\(moveCounter) moves"
@@ -485,14 +603,14 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         self.view.addSubview(statsMovesLabel)
         
         statsMovesLabel.center = self.view.center
-        statsMovesLabel.center.x = self.view.center.x //+ 65
-        statsMovesLabel.center.y = self.view.center.y - 10
+        statsMovesLabel.center.x = self.view.center.x
+        statsMovesLabel.center.y = self.view.center.y + 35
         statsMovesLabel.isHidden = false
         
         
         //Stats (Score)
         statsScoreLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
-        statsScoreLabel.font = UIFont(name: "Helvetica", size: 30.0)
+        statsScoreLabel.font = UIFont(name: "Helvetica", size: 35.0)
         statsScoreLabel.center = CGPoint(x: 160, y: 285)
         statsScoreLabel.textAlignment = .center
         statsScoreLabel.text = "Score \(score)"
@@ -506,18 +624,19 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             statsScoreLabel.layer.shadowRadius = 2
         
         statsScoreLabel.center = self.view.center
-        statsScoreLabel.center.x = self.view.center.x //+ 60
-        statsScoreLabel.center.y = self.view.center.y + 55
+        statsScoreLabel.center.x = self.view.center.x
+        statsScoreLabel.center.y = self.view.center.y - 70
         statsScoreLabel.isHidden = false
         
         //display high score ..
+        if scoreIsHigher == true{
+        highScoreLabel.text = ("New High Score!")
+        }
+        else{
         highScoreLabel.text = ("High Score \(highScore)")
-        
-        //marchAdd
+        }
         highScoreLabel.font = UIFont(name: "Helvetica", size: 23.0)
-        highScoreLabel.center.y = self.view.center.y + 86
-        //marchAdd
-        
+        highScoreLabel.center.y = self.view.center.y + 80
         highScoreLabel.isHidden = false
         highScoreLabel.layer.zPosition = 3
         
@@ -540,9 +659,29 @@ class ViewController: UIViewController, UICollectionViewDelegate {
 
         
     }
+    
     func setupGame()  {
+        var randomColorCount = 0
+        for _ in 0...7{
+        let rnd1 = Double.random(min: 0.1, max: 1.0)
+        colorsRed[randomColorCount] = rnd1
+        let rnd2 = Double.random(min: 0.1, max: 1.0)
+        colorsGreen[randomColorCount] = rnd2
+        let rnd3 = Double.random(min: 0.1, max: 1.0)
+        colorsBlue[randomColorCount] = rnd3
+        randomColorCount += 1
+        }
         
-        print("In setupGame")
+        var randomColorCount2 = 10
+        for _ in 0...7{
+            let rnd1 = Double.random(min: 0.1, max: 1.0)
+            colorsRed[randomColorCount2] = rnd1
+            let rnd2 = Double.random(min: 0.1, max: 1.0)
+            colorsGreen[randomColorCount2] = rnd2
+            let rnd3 = Double.random(min: 0.1, max: 1.0)
+            colorsBlue[randomColorCount2] = rnd3
+            randomColorCount2 += 1
+        }
         
         if musicSwitch.isOn {
         playGameMusic()
@@ -554,7 +693,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         arrayCounter = 0
         matchCounter = 0
         moveCounter = 0
-        seconds = 20
+        seconds = 60
         scoreIsHigher = false
         
         gameTopCounter.isHidden = false
@@ -686,13 +825,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         //******* Debugging ********//
         
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(ViewController.subtractTime), userInfo: nil, repeats: true)
-        
-        print("\(highScore) setupGame") //debug setupGame
     }
 
     
     func menuPlayButtonClicked() {
-        print("Play Button Clicked")
         menuView.isHidden = true
         menuPlay.isHidden = true
         menuLabel.isHidden = true
@@ -702,41 +838,55 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         setupGame()
     }
     func menuProfileButtonClicked() {
-        print("Play Button Clicked")
-        menuPlay.isHidden = true
-        menuHelp.isHidden = true
-        menuLabel.isHidden = true
+        
+        //visible
         musicText.isHidden = false
-        menuProfile.isHidden = true
         musicSwitch.isHidden = false
         vibrationText.isHidden = false
         highScoreLabel.isHidden = false
-        //marchAdd
-        highScoreLabel.font = UIFont(name: "Helvetica", size: 30.0)
-        highScoreLabel.center.y = self.view.center.y + 115
-        //marchAdd
         vibrationSwitch.isHidden = false
         profileBackToMenu.isHidden = false
+        vibrationSwitch.isHidden = false
+        profileBackToMenu.isHidden = false
+        allTimeTimeLabel.isHidden = false
+        allTimeScoreLabel.isHidden = false
+        allTimeMovesLabel.isHidden = false
+        
+        //hidden
+        menuPlay.isHidden = true
+        menuHelp.isHidden = true
+        menuLabel.isHidden = true
+        menuProfile.isHidden = true
+
+        highScoreLabel.font = UIFont(name: "Helvetica", size: 30.0)
+        highScoreLabel.center.y = self.view.center.y + 115
+
+
     }
     func menuHelpButtonClicked() {
-        print("Help Button Clicked")
         UIApplication.shared.openURL(NSURL(string: "http://scomiller.com/game")! as URL)
     }
     
     func profileBackToMenuButtonClicked(){
-        musicText.isHidden = true
-        musicSwitch.isHidden = true
-        vibrationSwitch.isHidden = true
-        vibrationText.isHidden = true
+        
+        //visible
+        menuProfile.isHidden = false
         menuLabel.isHidden = false
         menuPlay.isHidden = false
-        menuProfile.isHidden = false
         menuHelp.isHidden = false
+        
+        //hidden
+        allTimeMovesLabel.isHidden = true
+        allTimeScoreLabel.isHidden = true
         profileBackToMenu.isHidden = true
+        allTimeTimeLabel.isHidden = true
+        vibrationSwitch.isHidden = true
         highScoreLabel.isHidden = true
+        vibrationText.isHidden = true
+        musicSwitch.isHidden = true
+        musicText.isHidden = true
     }
     func postGamePlayButtonClicked() {
-        print("Post game play button clicked")
         timerLabel.removeFromSuperview()
         postGameView.isHidden = true
         postGamePlayButton.isHidden = true
@@ -806,29 +956,24 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             initPosy = Int(recognizer.view!.center.y)
             
             let velocity = recognizer.velocity(in: self.view)
-            print(velocity)
             
             recognizer.view?.layer.zPosition = 2
             
-            movingUp = false
-            movingLeft = false
-            movingRight = false
-            movingDown = false
             
-            if velocity.x > 75 {
-                movingRight = true
+            movingVertical = false
+            movingHorizontal = false
+            snappedToSpot = false
+            
+            if abs(velocity.x) > abs(velocity.y * 2) {
+                // this is horizontal movement
+                movingHorizontal = true
                 myBlocks[objectDragging].center.y = CGFloat(initPosy)
-            }
-            else if velocity.x < -75 {
-                movingLeft = true
                 myBlocks[objectDragging].center.y = CGFloat(initPosy)
-            }
-            else if velocity.y < -30 {
-                movingUp = true
-                myBlocks[objectDragging].center.x = CGFloat(initPosx)
             }
             else {
-                movingDown = true
+                // this is vertical movement
+                movingVertical = true
+                myBlocks[objectDragging].center.x = CGFloat(initPosx)
                 myBlocks[objectDragging].center.x = CGFloat(initPosx)
             }
 
@@ -837,28 +982,35 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         case .changed:
             
             
-            if (movingRight == true) || (movingLeft == true)  {
+            if (movingHorizontal == true){
                 myBlocks[objectDragging].center.y = CGFloat(initPosy)
             }
-            else if (movingDown == true) || (movingUp == true) {
+            else if (movingVertical == true){
                 myBlocks[objectDragging].center.x = CGFloat(initPosx)
             }
 
         case .ended:
+
+            let movementDistanceX = abs(Int((recognizer.view?.center.x)!) - initPosx)
+            let movementDistanceY = abs(Int((recognizer.view?.center.y)!) - initPosy)
+            print(movementDistanceX)
+            print(movementDistanceY)
             
-            movingUp = false
-            movingLeft = false
-            movingRight = false
-            movingDown = false
+            movingVertical = false
+            movingHorizontal = false
+            
+            if movementDistanceY > 160 || movementDistanceX > 160 {
+                myBlocks[objectDragging].center.x = CGFloat(initPosx)
+                myBlocks[objectDragging].center.y = CGFloat(initPosy)
+            }
+            else{
             
             //Check to see if the move took place inside the bounds of the screen
             if (myBlocks[objectDragging].center.x <= 40 || myBlocks[objectDragging].center.x >= 360) {
-                print("bounds clip")
                 myBlocks[objectDragging].center.x = CGFloat(initPosx)
                 myBlocks[objectDragging].center.y = CGFloat(initPosy)
             }
             else if (myBlocks[objectDragging].center.y <= 65 || myBlocks[objectDragging].center.y >= 720) {
-                print("bounds clip")
                 myBlocks[objectDragging].center.x = CGFloat(initPosx)
                 myBlocks[objectDragging].center.y = CGFloat(initPosy)
             }
@@ -883,13 +1035,13 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 if ((100 / 2 > sqrt((pos1.x - y.center.x) * (pos1.x - y.center.x) + (pos1.y - y.center.y) * (pos1.y - y.center.y))) && (validMove == true)){
                     myBlocks[objectDragging].center.x = y.center.x
                     myBlocks[objectDragging].center.y = y.center.y
+                    snappedToSpot = true
                     if (CGFloat(initPosx) == myBlocks[objectDragging].center.x) && (CGFloat(initPosy) == myBlocks[objectDragging].center.y){
                         moveCounter -= 1
                         gameTopCounter.text = "\(moveCounter)"
                     }
                 }
             }
-            
             //Check match
             if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)) && (myBlocks[objectDragging].tintColor == myCircles[circleLocation].tintColor) && (validMove == true))) {
                 
@@ -900,6 +1052,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
                 }
                 matchCounter += 1
+                
+                //Add 1 second for a match
+                seconds += 3
+                timerLabel.text = "\(seconds)"
                 
                 if matchCounter == 16{
                 allMatches = true
@@ -915,8 +1071,17 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             else {
                 moveCounter += 1
                 gameTopCounter.text = "\(moveCounter)"
+                
+                //subtract time for non-match move
+                seconds -= 1
+                timerLabel.text = "\(seconds)"
             }
-
+            //Check to see if the block is being moved to a circle position
+            if snappedToSpot == false {
+                myBlocks[objectDragging].center.x = CGFloat(initPosx)
+                myBlocks[objectDragging].center.y = CGFloat(initPosy)
+            }
+        }
         default:
             break
         }
@@ -937,9 +1102,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         seconds -= 1
         timerLabel.text = "\(seconds)"
         
-        if(seconds == 0)  {
+        if(seconds == 0 || seconds < 0)  {
             timer.invalidate()
             outOfTime = true
+            seconds = 0
             postGame()
         }
         else if (seconds <= 10) {
@@ -982,6 +1148,18 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     func saveHighScore() {
         let highScoreData = UserDefaults.standard
         highScore = score
-        highScoreData.setValue(highScore, forKey: "highScore")
+        highScoreData.set(highScore, forKey: "highScore")
+    }
+    func secondsToHoursMinutesSeconds (allTimeTime : Int) -> (Int, Int, Int) {
+        return (allTimeTime / 3600, (allTimeTime % 3600) / 60, (allTimeTime % 3600) % 60)
+    }
+        
+    func longTap(sender : UIGestureRecognizer){
+        print("Long tap")
+        if sender.state == .ended {
+            print("UIGestureRecognizerStateEnded")
+            seconds = 0
+            forceEnd = true
+        }
     }
 }
