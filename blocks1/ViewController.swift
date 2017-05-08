@@ -109,6 +109,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var outOfTime = false
     var forceEnd = false
     
+    //animation
+    var didAnimate = false
+    
     //movement variables
     var objectDragging = 0
     var isDragging = false
@@ -124,6 +127,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     var pos1 = CGPoint (x: 0.0, y: 0.0)
     var pos2 = CGPoint (x: 0.0, y: 0.0)
     
+    var objectMatched = false
     var xMatchTag = 0
     var yMatchTag = 0
     var allMatches = false
@@ -482,6 +486,11 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         allTimeMoves = allTimeMoves + moveCounter
         allTimeTime = allTimeTime + (60 - seconds)
         }
+        else if forceEnd == true{
+        score = 0
+        matchCounter = 0
+        moveCounter = 0
+        }
         
         let allTimeScoreData = UserDefaults.standard
         allTimeScoreData.set(allTimeScore, forKey: "allTimeScore")
@@ -535,6 +544,28 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             allMatchesLabel.center.y = self.view.center.y - 125
             allMatches = false
             allMatchesLabel.isHidden = false
+        }
+            
+        else if forceEnd == true {
+            outOfTimeLabel = UILabel(frame: CGRect(x: 25, y: 25, width: 270, height: 60))
+            outOfTimeLabel.font = UIFont(name: "Helvetica", size: 25.0)
+            outOfTimeLabel.center = CGPoint(x: 160, y: 285)
+            outOfTimeLabel.textAlignment = .center
+            outOfTimeLabel.text = "You ended the game"
+            outOfTimeLabel.layer.zPosition = 1;
+            outOfTimeLabel.textColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+            self.view.addSubview(outOfTimeLabel)
+            
+            outOfTimeLabel.layer.shadowColor = UIColor.black.cgColor
+            outOfTimeLabel.layer.shadowOpacity = 0.5
+            outOfTimeLabel.layer.shadowOffset = CGSize.zero
+            outOfTimeLabel.layer.shadowRadius = 3
+            
+            outOfTimeLabel.center = self.view.center
+            outOfTimeLabel.center.x = self.view.center.x
+            outOfTimeLabel.center.y = self.view.center.y - 125
+            outOfTime = false
+            outOfTimeLabel.isHidden = false
         }
         
         //Out of time / All matches made
@@ -661,6 +692,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     }
     
     func setupGame()  {
+        objectMatched = false
         var randomColorCount = 0
         for _ in 0...7{
         let rnd1 = Double.random(min: 0.1, max: 1.0)
@@ -772,9 +804,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 
                 let randArrayVar = shuffledArray[nextPos]
                 
-                
                 //circles
-                
                 let circleImg = UIImageView(image:#imageLiteral(resourceName: "circle"))
                 circleImg.tintColor = UIColor(red: CGFloat(colorsRed[randArrayVar]), green: CGFloat(colorsGreen[randArrayVar]), blue: CGFloat(colorsBlue[randArrayVar]), alpha: 1.0)
                 circleImg.center.x = CGFloat(initX + i * (imgWidth + padding))
@@ -783,8 +813,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 //add the image to the circle array
                 myCircles.append(circleImg)
                 myCircles[arrayCounter].tag = arrayCounter
-                
-                
                 
                 //add the circle to the screen
                 view.addSubview(circleImg)
@@ -811,6 +839,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 nextPos += 1
             }
         }
+        
         
         //Hide the two white squares built to index 8 and 9 (above the two white circles)
         myBlocks[8].removeFromSuperview()
@@ -935,7 +964,13 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     @IBAction func handlePan(_ recognizer: UIPanGestureRecognizer) {
         let translation = recognizer.translation(in: self.view)
         
+        if objectMatched == true {
+            myBlocks[objectDragging].isHidden = true
+            objectMatched = false
+        }
+        
         objectDragging = (recognizer.view?.tag)!
+        
         var counter = 0
         
         
@@ -952,6 +987,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
         switch(recognizer.state) {
         case .began:
             
+            
             initPosx = Int(recognizer.view!.center.x)
             initPosy = Int(recognizer.view!.center.y)
             
@@ -959,6 +995,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             
             recognizer.view?.layer.zPosition = 2
             
+            print(myBlocks[objectDragging].tintColor)
+            print(circleLocation)
+            print(myCircles[circleLocation].tintColor)
             
             movingVertical = false
             movingHorizontal = false
@@ -968,12 +1007,10 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 // this is horizontal movement
                 movingHorizontal = true
                 myBlocks[objectDragging].center.y = CGFloat(initPosy)
-                myBlocks[objectDragging].center.y = CGFloat(initPosy)
             }
             else {
                 // this is vertical movement
                 movingVertical = true
-                myBlocks[objectDragging].center.x = CGFloat(initPosx)
                 myBlocks[objectDragging].center.x = CGFloat(initPosx)
             }
 
@@ -993,8 +1030,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
 
             let movementDistanceX = abs(Int((recognizer.view?.center.x)!) - initPosx)
             let movementDistanceY = abs(Int((recognizer.view?.center.y)!) - initPosy)
-            print(movementDistanceX)
-            print(movementDistanceY)
             
             movingVertical = false
             movingHorizontal = false
@@ -1017,10 +1052,11 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             
             //Check to see if a block is in the space we are trying to go to
             for x in myBlocks {
-            if (100 / 2 > sqrt((pos1.x - x.center.x) * (pos1.x - x.center.x) + (pos1.y - x.center.y) * (pos1.y - x.center.y))) {
+            if (50 > sqrt((pos1.x - x.center.x) * (pos1.x - x.center.x) + (pos1.y - x.center.y) * (pos1.y - x.center.y))) {
                 if ((x.tag != objectDragging) && (x.isHidden != true)) {
                     myBlocks[objectDragging].center.x = CGFloat(initPosx)
                     myBlocks[objectDragging].center.y = CGFloat(initPosy)
+                    
                     moveCounter -= 1
                     validMove = false
                     }
@@ -1032,7 +1068,7 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             
             //Set the block uniformly in the circle container
             for y in myCircles {
-                if ((100 / 2 > sqrt((pos1.x - y.center.x) * (pos1.x - y.center.x) + (pos1.y - y.center.y) * (pos1.y - y.center.y))) && (validMove == true)){
+                if ((50 > sqrt((pos1.x - y.center.x) * (pos1.x - y.center.x) + (pos1.y - y.center.y) * (pos1.y - y.center.y))) && (validMove == true)){
                     myBlocks[objectDragging].center.x = y.center.x
                     myBlocks[objectDragging].center.y = y.center.y
                     snappedToSpot = true
@@ -1043,25 +1079,28 @@ class ViewController: UIViewController, UICollectionViewDelegate {
                 }
             }
             //Check match
-            if ((100 / 2 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)) && (myBlocks[objectDragging].tintColor == myCircles[circleLocation].tintColor) && (validMove == true))) {
-                
-                myBlocks[objectDragging].isHidden = true
+            if ((50 > sqrt((pos1.x - pos2.x) * (pos1.x - pos2.x) + (pos1.y - pos2.y) * (pos1.y - pos2.y)) && (myBlocks[objectDragging].tintColor == myCircles[circleLocation].tintColor) && (validMove == true))) {
+
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.myBlocks[self.objectDragging].alpha = 0
+                }, completion: nil)
                 myCircles[circleLocation].tintColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                
+                objectMatched = true
                 
                 if vibrationSwitch.isOn {
                 AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
                 }
                 matchCounter += 1
                 
-                //Add 1 second for a match
-                seconds += 3
-                timerLabel.text = "\(seconds)"
-                
                 if matchCounter == 16{
                 allMatches = true
                 allMatchesLabel.isHidden = false
                 
                 postGame()
+                }
+                else if forceEnd == true{
+                    postGame()
                 }
                 else if seconds == 0{
                 outOfTime = true
@@ -1071,10 +1110,6 @@ class ViewController: UIViewController, UICollectionViewDelegate {
             else {
                 moveCounter += 1
                 gameTopCounter.text = "\(moveCounter)"
-                
-                //subtract time for non-match move
-                seconds -= 1
-                timerLabel.text = "\(seconds)"
             }
             //Check to see if the block is being moved to a circle position
             if snappedToSpot == false {
@@ -1155,7 +1190,9 @@ class ViewController: UIViewController, UICollectionViewDelegate {
     }
         
     func longTap(sender : UIGestureRecognizer){
-        print("Long tap")
+        gameTopTitle.text = "End Game"
+        gameTopTitle.font = UIFont(name: "Lombok", size: 30)
+        
         if sender.state == .ended {
             print("UIGestureRecognizerStateEnded")
             seconds = 0
